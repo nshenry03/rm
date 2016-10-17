@@ -1,15 +1,15 @@
-def JIRA_URL = "https://appdirect.jira.com/browse"
-def SLACK_URL = "https://hooks.slack.com/services/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"
-def MUTE = "adaeaf"
-def INFO = "64a62e"
-def WARN = "eeae3f"
-def FAIL = "d00000"
-def NOW = (new Date()).toTimestamp().getTime()/1000
+JIRA_URL = "https://appdirect.jira.com/browse"
+SLACK_URL = "https://hooks.slack.com/services/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"
+MUTE = "adaeaf"
+INFO = "64a62e"
+WARN = "eeae3f"
+FAIL = "d00000"
+NOW = (new Date()).toTimestamp().getTime()/1000
 
 /**
  * notify, using slack
  */
-notify(String action) {
+def notify(String action) {
     // handle environment variables
     def adVersion = (System.getenv("appdirectVersion") ?: "").allWhitespace ? "N/A" : System.getenv("appdirectVersion")
     def jbVersion = (System.getenv("billingVersion") ?: "").allWhitespace ? "N/A" : System.getenv("billingVersion")
@@ -55,7 +55,7 @@ String formatList(ArrayList items, boolean bold) {
 /**
  * notifies that a deployment has just been launched
  */
-deployStartNotification(String channel, String adVersion, String jbVersion,
+def deployStartNotification(String channel, String adVersion, String jbVersion,
         String issue, ArrayList customers, ArrayList steps) {
     sendDeployNotification(channel, MUTE, adVersion, jbVersion, issue, customers, steps, "rocket",
             "Production deployment launched: AppDirect ${adVersion}, JBilling ${jbVersion}",
@@ -67,7 +67,7 @@ deployStartNotification(String channel, String adVersion, String jbVersion,
 /**
  * notifies that a deployment has just been completed
  */
-deployEndNotification(String channel, String adVersion, String jbVersion,
+def deployEndNotification(String channel, String adVersion, String jbVersion,
         String issue, ArrayList customers, ArrayList steps) {
     sendDeployNotification(channel, INFO, adVersion, jbVersion, issue, customers, steps, "checkered_flag",
             "Production deployment completed: AppDirect ${adVersion}, JBilling ${jbVersion}",
@@ -79,7 +79,7 @@ deployEndNotification(String channel, String adVersion, String jbVersion,
 /**
  * posts a deployment notification to the specified slack channel
  */
-sendDeployNotification(String channel, String color, String adVersion, String jbVersion,
+def sendDeployNotification(String channel, String color, String adVersion, String jbVersion,
         String issue, ArrayList customers, ArrayList steps, String emoji,
         String fallback, String title, String desc) {
     def attachment = """
@@ -126,7 +126,7 @@ sendDeployNotification(String channel, String color, String adVersion, String jb
 /**
  * notifies that a deployment has just failed
  */
-deployFailNotification(String channel, String adVersion, String jbVersion,
+def deployFailNotification(String channel, String adVersion, String jbVersion,
         String issue, ArrayList customers, ArrayList steps) {
     sendDeployNotification(channel, FAIL, adVersion, jbVersion, issue, customers, steps, "bomb",
             "Production deployment failed: AppDirect ${adVersion}, JBilling ${jbVersion}",
@@ -138,7 +138,7 @@ deployFailNotification(String channel, String adVersion, String jbVersion,
 /**
  * posts an attachment to the specified slack channel
  */
-sendAttachment(String channel, String attachment) {
+def sendAttachment(String channel, String attachment) {
     // assemble payload
     def payload = """
     {
@@ -156,7 +156,7 @@ sendAttachment(String channel, String attachment) {
 /**
  * posts a simple text message to the specified slack channel
  */
-sendText(String channel, String text) {
+def sendText(String channel, String text) {
     // assemble payload
     def payload = """
     {
@@ -172,7 +172,7 @@ sendText(String channel, String text) {
 /**
  * post a payload to slack
  */
-postPayload(String payload) {
+def postPayload(String payload) {
     def connection = SLACK_URL.toURL().openConnection()
     connection.addRequestProperty("Content-Type", "application/json")
 
@@ -197,3 +197,5 @@ postPayload(String payload) {
         }
     }
 }
+
+notify("start")
