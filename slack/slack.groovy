@@ -4,7 +4,7 @@ class SlackMain {
   def static MUTE = "adaeaf"
   def static INFO = "64a62e"
   def static WARN = "eeae3f"
-  def static FAIL = "cc0000"
+  def static FAIL = "d00000"
   def static NOW = (new Date()).toTimestamp().getTime()/1000
 
   /**
@@ -17,7 +17,7 @@ class SlackMain {
     def issue = (System.getenv("issue") ?: "").toUpperCase()
     def customers = (System.getenv("customers") ?: "").tokenize(",")
     def steps = (System.getenv("steps") ?: "").tokenize(",")
-    
+
     // notify
     deployStartNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps)
     sleep(3000)
@@ -25,7 +25,7 @@ class SlackMain {
     sleep(3000)
     deployFailNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps)
   }
-  
+
   /**
    * formats an issue into a link
    */
@@ -52,36 +52,36 @@ class SlackMain {
   private static deployStartNotification(String channel, String adVersion, String jbVersion,
                                          String issue, ArrayList customers, ArrayList steps) {
     sendDeployNotification(channel, MUTE, adVersion, jbVersion, issue, customers, steps, "rocket",
-      "Production deployment launched: AppDirect ${adVersion}, JBilling ${jbVersion}",
-      "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} launched.",
-      "The following marketplace${customers.size > 1 ? "s" : ""} " +
-      "will be upgraded: ${formatList(customers, true)}.")
+            "Production deployment launched: AppDirect ${adVersion}, JBilling ${jbVersion}",
+            "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} launched.",
+            "The following marketplace${customers.size > 1 ? "s" : ""} " +
+                    "will be upgraded: ${formatList(customers, true)}.")
   }
-  
+
   /**
    * notifies that a deployment has just been completed
    */
   private static deployEndNotification(String channel, String adVersion, String jbVersion,
                                        String issue, ArrayList customers, ArrayList steps) {
     sendDeployNotification(channel, INFO, adVersion, jbVersion, issue, customers, steps, "checkered_flag",
-      "Production deployment completed: AppDirect ${adVersion}, JBilling ${jbVersion}",
-      "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} completed.",
-      "The following marketplace${customers.size > 1 ? "s" : ""} " +
-      "ha${customers.size > 1 ? "ve" : "s"} been upgraded: ${formatList(customers, true)}.")
+            "Production deployment completed: AppDirect ${adVersion}, JBilling ${jbVersion}",
+            "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} completed.",
+            "The following marketplace${customers.size > 1 ? "s" : ""} " +
+                    "ha${customers.size > 1 ? "ve" : "s"} been upgraded: ${formatList(customers, true)}.")
   }
-  
+
   /**
    * notifies that a deployment has just failed
    */
   private static deployFailNotification(String channel, String adVersion, String jbVersion,
-                                       String issue, ArrayList customers, ArrayList steps) {
+                                        String issue, ArrayList customers, ArrayList steps) {
     sendDeployNotification(channel, FAIL, adVersion, jbVersion, issue, customers, steps, "bomb",
-      "Production deployment failed: AppDirect ${adVersion}, JBilling ${jbVersion}",
-      "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} failed.",
-      "The following marketplace${customers.size > 1 ? "s" : ""} " +
-      "may not have been upgraded: ${formatList(customers, true)}.")
+            "Production deployment failed: AppDirect ${adVersion}, JBilling ${jbVersion}",
+            "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} failed.",
+            "The following marketplace${customers.size > 1 ? "s" : ""} " +
+                    "may not have been upgraded: ${formatList(customers, true)}.")
   }
-  
+
   /**
    * posts a deployment notification to the specified slack channel
    */
@@ -128,7 +128,7 @@ class SlackMain {
     """
     sendAttachment(channel, attachment)
   }
-  
+
   /**
    * posts an attachment to the specified slack channel
    */
@@ -142,11 +142,11 @@ class SlackMain {
         ]
       }
     """
-    
+
     // post payload
     postPayload(payload)
   }
-  
+
   /**
    * posts a simple text message to the specified slack channel
    */
@@ -158,18 +158,18 @@ class SlackMain {
         "text": "${text}"
       }
     """
-    
+
     // post payload
     postPayload(payload)
   }
-  
+
   /**
    * post a payload to slack
    */
   private static postPayload(String payload) {
     def connection = SLACK_URL.toURL().openConnection()
     connection.addRequestProperty("Content-Type", "application/json")
-    
+
     // posting payload to slack
     def encodedPayload = URLEncoder.encode(payload)
     connection.setRequestMethod("POST")
@@ -193,4 +193,3 @@ class SlackMain {
     }
   }
 }
-
