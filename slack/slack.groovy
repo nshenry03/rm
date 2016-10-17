@@ -187,7 +187,6 @@ class SlackMain {
     connection.setRequestMethod("POST")
     connection.doOutput = true
     connection.outputStream.withWriter {
-      println(">>> " + payload)
       it.write(payload)
       it.flush()
     }
