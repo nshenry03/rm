@@ -18,12 +18,24 @@ class SlackMain {
     def customers = (System.getenv("customers") ?: "").tokenize(",")
     def steps = (System.getenv("steps") ?: "").tokenize(",")
 
-    // notify
-    deployStartNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps)
-    sleep(3000)
-    deployEndNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps)
-    sleep(3000)
-    deployFailNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps)
+
+    // handle arguments
+    if (args.size() > 0) {
+      def action = args[0]
+
+      // notify
+      switch (action) {
+        case "start":
+          deployStartNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps)
+          break
+        case "success":
+          deployEndNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps)
+          break
+        case "failure":
+          deployFailNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps)
+          break
+      }
+    }
   }
 
   /**
