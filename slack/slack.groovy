@@ -198,7 +198,11 @@ def postPayload(String payload) {
     }
 }
 
-if (args != null & args.size() > 0) {
-    println(args)
-    notify(args[0])
+try {
+    if (args != null & args.size() > 0) {
+        println(args)
+        notify(args[0])
+    }
+} catch (MissingPropertyException ignored) {
+    // do nothing
 }
