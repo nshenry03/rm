@@ -7,9 +7,9 @@ FAIL = "d00000"
 NOW = (new Date()).toTimestamp().getTime()/1000
 
 /**
- * notify, using slack
+ * send a notification, using slack
  */
-def notify(String action) {
+def sendNotification(String action) {
     // handle environment variables
     def adVersion = (System.getenv("appdirectVersion") ?: "").allWhitespace ? "N/A" : System.getenv("appdirectVersion")
     def jbVersion = (System.getenv("billingVersion") ?: "").allWhitespace ? "N/A" : System.getenv("billingVersion")
@@ -201,7 +201,7 @@ def postPayload(String payload) {
 try {
     if (args != null & args.size() > 0) {
         println(args)
-        notify(args[0])
+        sendNotification(args[0])
     }
 } catch (MissingPropertyException ignored) {
     // do nothing
