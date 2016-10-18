@@ -6,17 +6,19 @@ WARN = "eeae3f"
 FAIL = "d00000"
 NOW = (new Date()).toTimestamp().getTime()/1000
 
+// environment variables / parameters
+
+
 /**
  * send a notification, using slack
  */
 def sendNotification(String action) {
-    // handle environment variables
-    def adVersion = (System.getenv("appdirectVersion") ?: "").allWhitespace ? "N/A" : System.getenv("appdirectVersion")
-    def jbVersion = (System.getenv("billingVersion") ?: "").allWhitespace ? "N/A" : System.getenv("billingVersion")
-    def issue = (System.getenv("issue") ?: "").toUpperCase()
-    def customers = (System.getenv("customers") ?: "").tokenize(",")
-    def steps = (System.getenv("steps") ?: "").tokenize(",")
-
+    // some preprocessing
+    def adVersion = (getValue("appdirectVersion") ?: "").allWhitespace ? "N/A" : getValue("appdirectVersion")
+    def jbVersion = (getValue("billingVersion") ?: "").allWhitespace ? "N/A" : getValue("billingVersion")
+    def issue = (getValue("issue") ?: "").toUpperCase()
+    def customers = (getValue("customers") ?: "").tokenize(",")
+    def steps = (getValue("steps") ?: "").tokenize(",")
 
     // notify
     switch (action) {
@@ -88,7 +90,7 @@ def sendDeployNotification(String channel, String color, String adVersion, Strin
           "color": "#${color}",
           "fallback": "${fallback}",
           "title": "${title}",
-          "title_link": "${System.getenv("BUILD_URL")}",
+          "title_link": "${getValue("BUILD_URL")}",
           "fields": [
               {
                   "title": "AppDirect",
@@ -116,7 +118,7 @@ def sendDeployNotification(String channel, String color, String adVersion, Strin
                   "short": false
               }
           ],
-          "footer": "${emoji.allWhitespace ?: ":" + emoji + ": "}Build ${System.getenv("BUILD_NUMBER")} started by ${System.getenv("BUILD_USER")}",
+          "footer": "${emoji.allWhitespace ?: ":" + emoji + ": "}Build ${getValue("BUILD_NUMBER")} started by ${getValue("BUILD_USER")}",
           "ts": ${NOW}
       }
   """
@@ -198,11 +200,26 @@ def postPayload(String payload) {
     }
 }
 
-try {
-    if (args != null & args.size() > 0) {
-        println(args)
-        sendNotification(args[0])
+/**
+ * looks up for a value in the arguments, then the environment variables
+ */
+String getValue(String name) {
+    def val
+    args.each {
+        println("  it: " + it)
+        if (it.startsWith(name + ":")) {
+            val = it.substring(1 + it.indexOf(":"))
+        }
     }
-} catch (MissingPropertyException ignored) {
-    // do nothing
+    if (!val) {
+        val = System.getenv()[name]
+    }
+    return val
+}
+
+if (args.size() > 0) {
+    println(args)
+
+    def action = args[0]
+    sendNotification(action)
 }
