@@ -198,4 +198,7 @@ def postPayload(String payload) {
     }
 }
 
-notify("start")
+if (args.size() > 0) {
+    println(args)
+    notify(args[0])
+}
