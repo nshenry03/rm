@@ -206,7 +206,6 @@ def postPayload(String payload) {
 String getValue(String name) {
     def val
     args.each {
-        println("  it: " + it)
         if (it.startsWith(name + ":")) {
             val = it.substring(1 + it.indexOf(":"))
         }
