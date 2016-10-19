@@ -21,7 +21,7 @@ def sendNotification(String action) {
     def steps = (getValue("steps") ?: "").tokenize(",")
 
     // notify
-    switch (action.toLowerString()) {
+    switch (action.toLowerCase) {
         case "start":
             deployStartNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps)
             break
