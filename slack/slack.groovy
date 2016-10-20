@@ -26,11 +26,13 @@ def sendNotification(String action) {
             deployStartNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps)
             break
         case "success":
-            deployEndNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps)
+            deploySuccessNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps)
             break
         case "failure":
-            deployFailNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps)
+            deployFailureNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps)
             break
+        default:
+            deployEndNotification(sdgdfhxfg)
     }
 }
 
@@ -69,13 +71,37 @@ def deployStartNotification(String channel, String adVersion, String jbVersion,
 /**
  * notifies that a deployment has just been completed
  */
-def deployEndNotification(String channel, String adVersion, String jbVersion,
+def deploySuccessNotification(String channel, String adVersion, String jbVersion,
         String issue, ArrayList customers, ArrayList steps) {
     sendDeployNotification(channel, INFO, adVersion, jbVersion, issue, customers, steps, "checkered_flag",
             "Production deployment completed: AppDirect ${adVersion}, JBilling ${jbVersion}",
             "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} completed.",
             "The following marketplace${customers.size > 1 ? "s" : ""} " +
                     "ha${customers.size > 1 ? "ve" : "s"} been upgraded: ${formatList(customers, true)}.")
+}
+
+/**
+ * notifies that a deployment has just failed
+ */
+def deployFailureNotification(String channel, String adVersion, String jbVersion,
+                              String issue, ArrayList customers, ArrayList steps) {
+    sendDeployNotification(channel, FAIL, adVersion, jbVersion, issue, customers, steps, "bomb",
+            "Production deployment failed: AppDirect ${adVersion}, JBilling ${jbVersion}",
+            "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} failed.",
+            "The following marketplace${customers.size > 1 ? "s" : ""} " +
+                    "may not have been upgraded: ${formatList(customers, true)}.")
+}
+
+/**
+ * notifies that a deployment has just failed
+ */
+def deployOtherNotification(String channel, String adVersion, String jbVersion,
+                            String issue, ArrayList customers, ArrayList steps) {
+    sendDeployNotification(channel, WARN, adVersion, jbVersion, issue, customers, steps, "warning",
+            "Production deployment ended: AppDirect ${adVersion}, JBilling ${jbVersion}",
+            "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} has been unconclusive.",
+            "The following marketplace${customers.size > 1 ? "s" : ""} " +
+                    "may not have been upgraded: ${formatList(customers, true)}.")
 }
 
 /**
@@ -123,18 +149,6 @@ def sendDeployNotification(String channel, String color, String adVersion, Strin
       }
   """
     sendAttachment(channel, attachment)
-}
-
-/**
- * notifies that a deployment has just failed
- */
-def deployFailNotification(String channel, String adVersion, String jbVersion,
-        String issue, ArrayList customers, ArrayList steps) {
-    sendDeployNotification(channel, FAIL, adVersion, jbVersion, issue, customers, steps, "bomb",
-            "Production deployment failed: AppDirect ${adVersion}, JBilling ${jbVersion}",
-            "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} failed.",
-            "The following marketplace${customers.size > 1 ? "s" : ""} " +
-                    "may not have been upgraded: ${formatList(customers, true)}.")
 }
 
 /**
