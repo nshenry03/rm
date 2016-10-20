@@ -32,7 +32,7 @@ def sendNotification(String action) {
             deployFailureNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps)
             break
         default:
-            deployEndNotification(sdgdfhxfg)
+            deployUnstableNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps)
     }
 }
 
@@ -93,10 +93,10 @@ def deployFailureNotification(String channel, String adVersion, String jbVersion
 }
 
 /**
- * notifies that a deployment has just failed
+ * notifies that a deployment has just ended weirdly
  */
-def deployOtherNotification(String channel, String adVersion, String jbVersion,
-                            String issue, ArrayList customers, ArrayList steps) {
+def deployUnstableNotification(String channel, String adVersion, String jbVersion,
+                               String issue, ArrayList customers, ArrayList steps) {
     sendDeployNotification(channel, WARN, adVersion, jbVersion, issue, customers, steps, "warning",
             "Production deployment ended: AppDirect ${adVersion}, JBilling ${jbVersion}",
             "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} has been unconclusive.",
