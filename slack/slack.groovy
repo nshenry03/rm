@@ -12,7 +12,7 @@ NOW = (new Date()).toTimestamp().getTime()/1000
 /**
  * send a notification, using slack
  */
-def sendNotification(String action) {
+def sendNotification(String channel, String action) {
     // some preprocessing
     def adVersion = getValue("appdirectVersion").allWhitespace ? "N/A" : getValue("appdirectVersion")
     def jbVersion = getValue("billingVersion").allWhitespace ? "N/A" : getValue("billingVersion")
@@ -24,16 +24,36 @@ def sendNotification(String action) {
     // notify
     switch (action.toLowerCase()) {
         case "start":
-            deployStartNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps)
+            // notifies that a deployment has just been launched
+            sendDeployNotification(channel, MUTE, adVersion, jbVersion, issue, customers, steps, "", "rocket",
+                    "Production deployment launched: AppDirect ${adVersion}, JBilling ${jbVersion}",
+                    "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} launched.",
+                    "The following marketplace${customers.size > 1 ? "s" : ""} " +
+                            "will be upgraded: ${formatList(customers, true)}.")
             break
         case "success":
-            deploySuccessNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps)
+            // notifies that a deployment has just been completed successfully
+            sendDeployNotification(channel, INFO, adVersion, jbVersion, issue, customers, steps, "", "checkered_flag",
+                    "Production deployment completed: AppDirect ${adVersion}, JBilling ${jbVersion}",
+                    "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} completed.",
+                    "The following marketplace${customers.size > 1 ? "s" : ""} " +
+                            "ha${customers.size > 1 ? "ve" : "s"} been upgraded: ${formatList(customers, true)}.")
             break
         case "failure":
-            deployFailureNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps, logs)
+            // notifies that a deployment has just failed
+            sendDeployNotification(channel, FAIL, adVersion, jbVersion, issue, customers, steps, logs, "bomb",
+                    "Production deployment failed: AppDirect ${adVersion}, JBilling ${jbVersion}",
+                    "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} failed.",
+                    "The following marketplace${customers.size > 1 ? "s" : ""} " +
+                            "may not have been upgraded: ${formatList(customers, true)}.")
             break
         default:
-            deployUnstableNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps, logs)
+            // notifies that a deployment has just ended in a weird fashion
+            sendDeployNotification(channel, WARN, adVersion, jbVersion, issue, customers, steps, logs, "warning",
+                    "Production deployment ended: AppDirect ${adVersion}, JBilling ${jbVersion}",
+                    "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} has been unconclusive.",
+                    "The following marketplace${customers.size > 1 ? "s" : ""} " +
+                            "may not have been upgraded: ${formatList(customers, true)}.")
     }
 }
 
@@ -55,54 +75,6 @@ String formatList(ArrayList items, boolean bold) {
         if (i == items.size - 2) text += " & "
     }
     return text
-}
-
-/**
- * notifies that a deployment has just been launched
- */
-def deployStartNotification(String channel, String adVersion, String jbVersion,
-                            String issue, ArrayList customers, ArrayList steps) {
-    sendDeployNotification(channel, MUTE, adVersion, jbVersion, issue, customers, steps, "", "rocket",
-            "Production deployment launched: AppDirect ${adVersion}, JBilling ${jbVersion}",
-            "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} launched.",
-            "The following marketplace${customers.size > 1 ? "s" : ""} " +
-                    "will be upgraded: ${formatList(customers, true)}.")
-}
-
-/**
- * notifies that a deployment has just been completed
- */
-def deploySuccessNotification(String channel, String adVersion, String jbVersion,
-                              String issue, ArrayList customers, ArrayList steps) {
-    sendDeployNotification(channel, INFO, adVersion, jbVersion, issue, customers, steps, "", "checkered_flag",
-            "Production deployment completed: AppDirect ${adVersion}, JBilling ${jbVersion}",
-            "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} completed.",
-            "The following marketplace${customers.size > 1 ? "s" : ""} " +
-                    "ha${customers.size > 1 ? "ve" : "s"} been upgraded: ${formatList(customers, true)}.")
-}
-
-/**
- * notifies that a deployment has just failed
- */
-def deployFailureNotification(String channel, String adVersion, String jbVersion,
-                              String issue, ArrayList customers, ArrayList steps, String logs) {
-    sendDeployNotification(channel, FAIL, adVersion, jbVersion, issue, customers, steps, logs, "bomb",
-            "Production deployment failed: AppDirect ${adVersion}, JBilling ${jbVersion}",
-            "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} failed.",
-            "The following marketplace${customers.size > 1 ? "s" : ""} " +
-                    "may not have been upgraded: ${formatList(customers, true)}.")
-}
-
-/**
- * notifies that a deployment has just ended weirdly
- */
-def deployUnstableNotification(String channel, String adVersion, String jbVersion,
-                               String issue, ArrayList customers, ArrayList steps, String logs) {
-    sendDeployNotification(channel, WARN, adVersion, jbVersion, issue, customers, steps, logs, "warning",
-            "Production deployment ended: AppDirect ${adVersion}, JBilling ${jbVersion}",
-            "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} has been unconclusive.",
-            "The following marketplace${customers.size > 1 ? "s" : ""} " +
-                    "may not have been upgraded: ${formatList(customers, true)}.")
 }
 
 /**
@@ -242,6 +214,7 @@ String getValue(String name) {
 }
 
 if (args.size() > 0) {
-    def action = args[0]
-    sendNotification(action)
+    def channel = args[0]
+    def action = args[1]
+    sendNotification(channel, action)
 }
