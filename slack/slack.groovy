@@ -66,7 +66,7 @@ def deployStartNotification(String channel, String adVersion, String jbVersion,
             "Production deployment launched: AppDirect ${adVersion}, JBilling ${jbVersion}",
             "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} launched.",
             "The following marketplace${customers.size > 1 ? "s" : ""} " +
-                    "will be upgraded: ${formatList(customers, true)}.", [])
+                    "will be upgraded: ${formatList(customers, true)}.")
 }
 
 /**
@@ -78,7 +78,7 @@ def deploySuccessNotification(String channel, String adVersion, String jbVersion
             "Production deployment completed: AppDirect ${adVersion}, JBilling ${jbVersion}",
             "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} completed.",
             "The following marketplace${customers.size > 1 ? "s" : ""} " +
-                    "ha${customers.size > 1 ? "ve" : "s"} been upgraded: ${formatList(customers, true)}.", [])
+                    "ha${customers.size > 1 ? "ve" : "s"} been upgraded: ${formatList(customers, true)}.")
 }
 
 /**
@@ -204,8 +204,6 @@ def postPayload(String payload) {
     def connection = SLACK_URL.toURL().openConnection()
     connection.addRequestProperty("Content-Type", "application/json")
 
-    println("Payload:\n" + payload)
-
     // posting payload to slack
     connection.setRequestMethod("POST")
     connection.doOutput = true
@@ -244,8 +242,6 @@ String getValue(String name) {
 }
 
 if (args.size() > 0) {
-    println(args)
-
     def action = args[0]
     sendNotification(action)
 }
