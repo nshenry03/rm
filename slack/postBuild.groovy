@@ -1,5 +1,7 @@
 // script arguments
 def args = []
+// channel
+args << new String("@joan.roch")
 // status
 args << new String(manager.getResult())
 // environment variables
