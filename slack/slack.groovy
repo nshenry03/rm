@@ -14,11 +14,12 @@ NOW = (new Date()).toTimestamp().getTime()/1000
  */
 def sendNotification(String action) {
     // some preprocessing
-    def adVersion = (getValue("appdirectVersion") ?: "").allWhitespace ? "N/A" : getValue("appdirectVersion")
-    def jbVersion = (getValue("billingVersion") ?: "").allWhitespace ? "N/A" : getValue("billingVersion")
-    def issue = (getValue("issue") ?: "").toUpperCase()
-    def customers = (getValue("customers") ?: "").tokenize(",")
-    def steps = (getValue("steps") ?: "").tokenize(",")
+    def adVersion = getValue("appdirectVersion").allWhitespace ? "N/A" : getValue("appdirectVersion")
+    def jbVersion = getValue("billingVersion").allWhitespace ? "N/A" : getValue("billingVersion")
+    def issue = getValue("issue").toUpperCase()
+    def customers = getValue("customers").tokenize(",")
+    def steps = getValue("steps").tokenize(",")
+    def logs = getValue("logs")
 
     // notify
     switch (action.toLowerCase()) {
@@ -29,10 +30,10 @@ def sendNotification(String action) {
             deploySuccessNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps)
             break
         case "failure":
-            deployFailureNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps)
+            deployFailureNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps, logs)
             break
         default:
-            deployUnstableNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps)
+            deployUnstableNotification("@joan.roch", adVersion, jbVersion, issue, customers, steps, logs)
     }
 }
 
@@ -60,32 +61,32 @@ String formatList(ArrayList items, boolean bold) {
  * notifies that a deployment has just been launched
  */
 def deployStartNotification(String channel, String adVersion, String jbVersion,
-        String issue, ArrayList customers, ArrayList steps) {
-    sendDeployNotification(channel, MUTE, adVersion, jbVersion, issue, customers, steps, "rocket",
+                            String issue, ArrayList customers, ArrayList steps) {
+    sendDeployNotification(channel, MUTE, adVersion, jbVersion, issue, customers, steps, "", "rocket",
             "Production deployment launched: AppDirect ${adVersion}, JBilling ${jbVersion}",
             "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} launched.",
             "The following marketplace${customers.size > 1 ? "s" : ""} " +
-                    "will be upgraded: ${formatList(customers, true)}.")
+                    "will be upgraded: ${formatList(customers, true)}.", [])
 }
 
 /**
  * notifies that a deployment has just been completed
  */
 def deploySuccessNotification(String channel, String adVersion, String jbVersion,
-        String issue, ArrayList customers, ArrayList steps) {
-    sendDeployNotification(channel, INFO, adVersion, jbVersion, issue, customers, steps, "checkered_flag",
+                              String issue, ArrayList customers, ArrayList steps) {
+    sendDeployNotification(channel, INFO, adVersion, jbVersion, issue, customers, steps, "", "checkered_flag",
             "Production deployment completed: AppDirect ${adVersion}, JBilling ${jbVersion}",
             "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} completed.",
             "The following marketplace${customers.size > 1 ? "s" : ""} " +
-                    "ha${customers.size > 1 ? "ve" : "s"} been upgraded: ${formatList(customers, true)}.")
+                    "ha${customers.size > 1 ? "ve" : "s"} been upgraded: ${formatList(customers, true)}.", [])
 }
 
 /**
  * notifies that a deployment has just failed
  */
 def deployFailureNotification(String channel, String adVersion, String jbVersion,
-                              String issue, ArrayList customers, ArrayList steps) {
-    sendDeployNotification(channel, FAIL, adVersion, jbVersion, issue, customers, steps, "bomb",
+                              String issue, ArrayList customers, ArrayList steps, String logs) {
+    sendDeployNotification(channel, FAIL, adVersion, jbVersion, issue, customers, steps, logs, "bomb",
             "Production deployment failed: AppDirect ${adVersion}, JBilling ${jbVersion}",
             "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} failed.",
             "The following marketplace${customers.size > 1 ? "s" : ""} " +
@@ -96,8 +97,8 @@ def deployFailureNotification(String channel, String adVersion, String jbVersion
  * notifies that a deployment has just ended weirdly
  */
 def deployUnstableNotification(String channel, String adVersion, String jbVersion,
-                               String issue, ArrayList customers, ArrayList steps) {
-    sendDeployNotification(channel, WARN, adVersion, jbVersion, issue, customers, steps, "warning",
+                               String issue, ArrayList customers, ArrayList steps, String logs) {
+    sendDeployNotification(channel, WARN, adVersion, jbVersion, issue, customers, steps, logs, "warning",
             "Production deployment ended: AppDirect ${adVersion}, JBilling ${jbVersion}",
             "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} has been unconclusive.",
             "The following marketplace${customers.size > 1 ? "s" : ""} " +
@@ -108,7 +109,7 @@ def deployUnstableNotification(String channel, String adVersion, String jbVersio
  * posts a deployment notification to the specified slack channel
  */
 def sendDeployNotification(String channel, String color, String adVersion, String jbVersion,
-        String issue, ArrayList customers, ArrayList steps, String emoji,
+        String issue, ArrayList customers, ArrayList steps, String logs, String emoji,
         String fallback, String title, String desc) {
     def attachment = """
       {
@@ -143,11 +144,22 @@ def sendDeployNotification(String channel, String color, String adVersion, Strin
                   "value": "${desc}",
                   "short": false
               }
+    """
+    if (!logs.allWhitespace) {
+        attachment += """,
+               {
+                    "title": "Logs",
+                    "value": "```${logs}```",
+                    "short": false
+               }
+        """
+    }
+    attachment += """
           ],
-          "footer": "${emoji.allWhitespace ?: ":" + emoji + ": "}Build ${getValue("BUILD_NUMBER")} started by ${getValue("BUILD_USER")}",
+          "footer": "${emoji.allWhitespace ?: ":$emoji: "}Build ${getValue("BUILD_NUMBER")} started by ${getValue("BUILD_USER")}",
           "ts": ${NOW}
       }
-  """
+    """
     sendAttachment(channel, attachment)
 }
 
@@ -163,7 +175,7 @@ def sendAttachment(String channel, String attachment) {
         ${attachment}
       ]
     }
-  """
+    """
 
     // post payload
     postPayload(payload)
@@ -179,7 +191,7 @@ def sendText(String channel, String text) {
       "channel": "${channel}",
       "text": "${text}"
     }
-  """
+    """
 
     // post payload
     postPayload(payload)
@@ -192,8 +204,9 @@ def postPayload(String payload) {
     def connection = SLACK_URL.toURL().openConnection()
     connection.addRequestProperty("Content-Type", "application/json")
 
+    println("Payload:\n" + payload)
+
     // posting payload to slack
-    def encodedPayload = URLEncoder.encode(payload)
     connection.setRequestMethod("POST")
     connection.doOutput = true
     connection.outputStream.withWriter {
@@ -227,7 +240,7 @@ String getValue(String name) {
     if (!val) {
         val = System.getenv()[name]
     }
-    return val
+    return (val ?: "")
 }
 
 if (args.size() > 0) {
