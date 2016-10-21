@@ -1,5 +1,6 @@
 JIRA_URL = "https://appdirect.jira.com/browse"
 SLACK_URL = "https://hooks.slack.com/services/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"
+NA = "N/A"
 MUTE = "adaeaf"
 INFO = "64a62e"
 WARN = "eeae3f"
@@ -12,48 +13,52 @@ NOW = (new Date()).toTimestamp().getTime()/1000
 /**
  * send a notification, using slack
  */
-def sendNotification(String channel, String action) {
+def sendNotification(String channelsList, String action) {
     // some preprocessing
-    def adVersion = getValue("appdirectVersion").allWhitespace ? "N/A" : getValue("appdirectVersion")
-    def jbVersion = getValue("billingVersion").allWhitespace ? "N/A" : getValue("billingVersion")
+    def channels = channelsList.tokenize(', ')
+    def adVersion = getValue("appdirectVersion").allWhitespace ? NA : getValue("appdirectVersion")
+    def jbVersion = getValue("billingVersion").allWhitespace ? NA : getValue("billingVersion")
+    def reason = getValue("reason")
     def issue = getValue("issue").toUpperCase()
     def customers = getValue("customers").tokenize(",")
     def steps = getValue("steps").tokenize(",")
     def logs = getValue("logs")
 
-    // notify
-    switch (action.toLowerCase()) {
-        case "start":
-            // notifies that a deployment has just been launched
-            sendDeployNotification(channel, MUTE, adVersion, jbVersion, issue, customers, steps, "", "rocket",
-                    "Production deployment launched: AppDirect ${adVersion}, JBilling ${jbVersion}",
-                    "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} launched.",
-                    "The following marketplace${customers.size > 1 ? "s" : ""} " +
-                            "will be upgraded: ${formatList(customers, true)}.")
-            break
-        case "success":
-            // notifies that a deployment has just been completed successfully
-            sendDeployNotification(channel, INFO, adVersion, jbVersion, issue, customers, steps, "", "checkered_flag",
-                    "Production deployment completed: AppDirect ${adVersion}, JBilling ${jbVersion}",
-                    "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} completed.",
-                    "The following marketplace${customers.size > 1 ? "s" : ""} " +
-                            "ha${customers.size > 1 ? "ve" : "s"} been upgraded: ${formatList(customers, true)}.")
-            break
-        case "failure":
-            // notifies that a deployment has just failed
-            sendDeployNotification(channel, FAIL, adVersion, jbVersion, issue, customers, steps, logs, "bomb",
-                    "Production deployment failed: AppDirect ${adVersion}, JBilling ${jbVersion}",
-                    "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} failed.",
-                    "The following marketplace${customers.size > 1 ? "s" : ""} " +
-                            "may not have been upgraded: ${formatList(customers, true)}.")
-            break
-        default:
-            // notifies that a deployment has just ended in a weird fashion
-            sendDeployNotification(channel, WARN, adVersion, jbVersion, issue, customers, steps, logs, "warning",
-                    "Production deployment ended: AppDirect ${adVersion}, JBilling ${jbVersion}",
-                    "Production deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} has been unconclusive.",
-                    "The following marketplace${customers.size > 1 ? "s" : ""} " +
-                            "may not have been upgraded: ${formatList(customers, true)}.")
+    // now notify
+    if (customers.size() > 0 && steps.contains("Prod") && (adVersion != NA && jbVersion != NA)) {
+        switch (action.toLowerCase()) {
+            case "start":
+                // notifies that a deployment has just been launched
+                sendDeployNotification(channels, MUTE, adVersion, jbVersion, reason, issue, customers, steps, "", "rocket",
+                        "Deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} launched: " +
+                                "AppDirect ${adVersion}, JBilling ${jbVersion}",
+                        "The following marketplace${customers.size > 1 ? "s" : ""} " +
+                                "will be upgraded: ${formatList(customers, false)}.")
+                break
+            case "success":
+                // notifies that a deployment has just been completed successfully
+                sendDeployNotification(channels, INFO, adVersion, jbVersion, reason, issue, customers, steps, "", "checkered_flag",
+                        "Deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} completed: " +
+                                "AppDirect ${adVersion}, JBilling ${jbVersion}",
+                        "The following marketplace${customers.size > 1 ? "s" : ""} " +
+                                "ha${customers.size > 1 ? "ve" : "s"} been upgraded: ${formatList(customers, false)}.")
+                break
+            case "failure":
+                // notifies that a deployment has just failed
+                sendDeployNotification(channels, FAIL, adVersion, jbVersion, reason, issue, customers, steps, logs, "bomb",
+                        "Deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} failed: " +
+                                "AppDirect ${adVersion}, JBilling ${jbVersion}",
+                        "The following marketplace${customers.size > 1 ? "s" : ""} " +
+                                "may not have been upgraded: ${formatList(customers, false)}.")
+                break
+            default:
+                // notifies that a deployment has just ended in a weird fashion
+                sendDeployNotification(channel, WARN, adVersion, jbVersion, reason, issue, customers, steps, logs, "warning",
+                        "Deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} ended: " +
+                                "AppDirect ${adVersion}, JBilling ${jbVersion}",
+                        "The following marketplace${customers.size > 1 ? "s" : ""} " +
+                                "may not have been upgraded: ${formatList(customers, false)}.")
+        }
     }
 }
 
@@ -78,11 +83,11 @@ String formatList(ArrayList items, boolean bold) {
 }
 
 /**
- * posts a deployment notification to the specified slack channel
+ * posts a deployment notification to the specified slack channels
  */
-def sendDeployNotification(String channel, String color, String adVersion, String jbVersion,
-        String issue, ArrayList customers, ArrayList steps, String logs, String emoji,
-        String fallback, String title, String desc) {
+def sendDeployNotification(ArrayList channels, String color, String adVersion, String jbVersion,
+        String reason, String issue, ArrayList customers, ArrayList steps, String logs, String emoji,
+        String fallback, String title) {
     def attachment = """
       {
           "mrkdwn_in": ["pretext", "text", "fields"],
@@ -113,7 +118,7 @@ def sendDeployNotification(String channel, String color, String adVersion, Strin
               },
               {
                   "title": "Description",
-                  "value": "${desc}",
+                  "value": "${reason}",
                   "short": false
               }
     """
@@ -132,41 +137,45 @@ def sendDeployNotification(String channel, String color, String adVersion, Strin
           "ts": ${NOW}
       }
     """
-    sendAttachment(channel, attachment)
+    sendAttachment(channels, attachment)
 }
 
 /**
- * posts an attachment to the specified slack channel
+ * posts an attachment to the specified slack channels
  */
-def sendAttachment(String channel, String attachment) {
-    // assemble payload
-    def payload = """
-    {
-      "channel": "${channel}",
-      "attachments": [
-        ${attachment}
-      ]
-    }
-    """
+def sendAttachment(ArrayList channels, String attachment) {
+    channels.each { channel ->
+        // assemble payload
+        def payload = """
+        {
+          "channel": "${channel}",
+          "attachments": [
+            ${attachment}
+          ]
+        }
+        """
 
-    // post payload
-    postPayload(payload)
+        // post payload
+        postPayload(payload)
+    }
 }
 
 /**
- * posts a simple text message to the specified slack channel
+ * posts a simple text message to the specified slack channels
  */
-def sendText(String channel, String text) {
-    // assemble payload
-    def payload = """
-    {
-      "channel": "${channel}",
-      "text": "${text}"
-    }
-    """
+def sendText(ArrayList channels, String text) {
+    channels.each { channel ->
+        // assemble payload
+        def payload = """
+        {
+          "channel": "${channel}",
+          "text": "${text}"
+        }
+        """
 
-    // post payload
-    postPayload(payload)
+        // post payload
+        postPayload(payload)
+    }
 }
 
 /**
@@ -214,7 +223,7 @@ String getValue(String name) {
 }
 
 if (args.size() > 0) {
-    def channel = args[0]
+    def channelsList = args[0]
     def action = args[1]
-    sendNotification(channel, action)
+    sendNotification(channelsList, action)
 }
