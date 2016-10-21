@@ -6,7 +6,7 @@ try {
     args << new String(channels)
 } catch (MissingPropertyException ignored) {
     // if 'channels' is undefined, use this value
-    args << new String("#tech-release")
+    args << new String("@joan.roch")
 }
 // build result
 args << new String(manager.getResult())
