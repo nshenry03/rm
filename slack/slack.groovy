@@ -18,6 +18,9 @@ def sendNotification(String channelsList, String action) {
     def channels = channelsList.tokenize(', ')
     def adVersion = getValue("appdirectVersion").allWhitespace ? NA : getValue("appdirectVersion")
     def jbVersion = getValue("billingVersion").allWhitespace ? NA : getValue("billingVersion")
+    def versions = []
+    if (adVersion != NA) versions << "AppDirect " + adVersion
+    if (jbVersion != NA) versions << "JBilling " + jbVersion
     def reason = getValue("reason")
     def issue = getValue("issue").toUpperCase()
     def customers = getValue("customers").tokenize(",")
@@ -30,34 +33,34 @@ def sendNotification(String channelsList, String action) {
             case "start":
                 // notifies that a deployment has just been launched
                 sendDeployNotification(channels, MUTE, adVersion, jbVersion, reason, issue, customers, steps, "", "rocket",
-                        "Deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} launched: " +
-                                "AppDirect ${adVersion}, JBilling ${jbVersion}",
+                        "Deployment of ${formatList(versions, false)} " +
+                                "to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} launched.",
                         "The following marketplace${customers.size > 1 ? "s" : ""} " +
-                                "will be upgraded: ${formatList(customers, false)}.")
+                                "will be upgraded: ${formatList(customers, true)}.")
                 break
             case "success":
                 // notifies that a deployment has just been completed successfully
                 sendDeployNotification(channels, INFO, adVersion, jbVersion, reason, issue, customers, steps, "", "checkered_flag",
-                        "Deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} completed: " +
-                                "AppDirect ${adVersion}, JBilling ${jbVersion}",
+                        "Deployment of ${formatList(versions, false)} " +
+                                "to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} completed.",
                         "The following marketplace${customers.size > 1 ? "s" : ""} " +
-                                "ha${customers.size > 1 ? "ve" : "s"} been upgraded: ${formatList(customers, false)}.")
+                                "ha${customers.size > 1 ? "ve" : "s"} been upgraded: ${formatList(customers, true)}.")
                 break
             case "failure":
                 // notifies that a deployment has just failed
                 sendDeployNotification(channels, FAIL, adVersion, jbVersion, reason, issue, customers, steps, logs, "bomb",
-                        "Deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} failed: " +
-                                "AppDirect ${adVersion}, JBilling ${jbVersion}",
+                        "Deployment of ${formatList(versions, false)} " +
+                            "to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} failed.",
                         "The following marketplace${customers.size > 1 ? "s" : ""} " +
-                                "may not have been upgraded: ${formatList(customers, false)}.")
+                                "may not have been upgraded: ${formatList(customers, true)}.")
                 break
             default:
                 // notifies that a deployment has just ended in a weird fashion
-                sendDeployNotification(channel, WARN, adVersion, jbVersion, reason, issue, customers, steps, logs, "warning",
-                        "Deployment to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} ended: " +
-                                "AppDirect ${adVersion}, JBilling ${jbVersion}",
+                sendDeployNotification(channels, WARN, adVersion, jbVersion, reason, issue, customers, steps, logs, "warning",
+                        "Deployment of ${formatList(versions, false)} " +
+                                "to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} ended.",
                         "The following marketplace${customers.size > 1 ? "s" : ""} " +
-                                "may not have been upgraded: ${formatList(customers, false)}.")
+                                "may not have been upgraded: ${formatList(customers, true)}.")
         }
     }
 }
@@ -87,13 +90,13 @@ String formatList(ArrayList items, boolean bold) {
  */
 def sendDeployNotification(ArrayList channels, String color, String adVersion, String jbVersion,
         String reason, String issue, ArrayList customers, ArrayList steps, String logs, String emoji,
-        String fallback, String title) {
+        String fallback, String desc) {
     def attachment = """
       {
           "mrkdwn_in": ["pretext", "text", "fields"],
           "color": "#${color}",
           "fallback": "${fallback}",
-          "title": "${title}",
+          "title": "${reason}",
           "title_link": "${getValue("BUILD_URL")}",
           "fields": [
               {
@@ -118,7 +121,7 @@ def sendDeployNotification(ArrayList channels, String color, String adVersion, S
               },
               {
                   "title": "Description",
-                  "value": "${reason}",
+                  "value": "${desc}",
                   "short": false
               }
     """
