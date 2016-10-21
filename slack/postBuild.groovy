@@ -2,7 +2,7 @@
 def args = []
 // channels
 try {
-    // try using 'channels' 
+    // try using 'channels'
     args << new String(channels)
 } catch (IllegalArgumentException ignored) {
     // if 'channels' is undefined, use this value

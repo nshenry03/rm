@@ -28,7 +28,7 @@ def sendNotification(String channelsList, String action) {
     def logs = getValue("logs")
 
     // now notify
-    if (customers.size() > 0 && steps.contains("Prod") && (adVersion != NA && jbVersion != NA)) {
+    if (customers.size() > 0 && steps.contains("Prod") && (adVersion != NA || jbVersion != NA)) {
         switch (action.toLowerCase()) {
             case "start":
                 // notifies that a deployment has just been launched
