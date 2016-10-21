@@ -4,7 +4,7 @@ def args = []
 try {
     // try using 'channels'
     args << new String(channels)
-} catch (IllegalArgumentException ignored) {
+} catch (MissingPropertyException ignored) {
     // if 'channels' is undefined, use this value
     args << new String("#tech-release")
 }
