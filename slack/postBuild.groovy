@@ -1,7 +1,13 @@
 // script arguments
 def args = []
 // channels
-args << new String("@joan.roch")
+try {
+    // try using 'channels' 
+    args << new String(channels)
+} catch (IllegalArgumentException ignored) {
+    // if 'channels' is undefined, use this value
+    args << new String("@joan.roch")
+}
 // build result
 args << new String(manager.getResult())
 // environment variables
