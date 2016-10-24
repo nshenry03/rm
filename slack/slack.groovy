@@ -13,9 +13,9 @@ NOW = (new Date()).toTimestamp().getTime()/1000
 /**
  * send a notification, using slack
  */
-def sendNotification(String channelsList, String action) {
+def sendNotification(String action) {
     // some preprocessing
-    def channels = channelsList.tokenize(', ')
+    def channels = getValue("channels").tokenize(', ')
     def adVersion = getValue("appdirectVersion").allWhitespace ? NA : getValue("appdirectVersion")
     def jbVersion = getValue("billingVersion").allWhitespace ? NA : getValue("billingVersion")
     def versions = []
@@ -226,7 +226,6 @@ String getValue(String name) {
 }
 
 if (args.size() > 0) {
-    def channelsList = args[0]
-    def action = args[1]
-    sendNotification(channelsList, action)
+    def action = args[0]
+    sendNotification(action)
 }
