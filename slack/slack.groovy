@@ -1,3 +1,6 @@
+/**
+ * some common values
+ */
 JIRA_URL = "https://appdirect.jira.com/browse"
 SLACK_URL = "https://hooks.slack.com/services/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"
 NA = "N/A"
@@ -6,9 +9,6 @@ INFO = "64a62e"
 WARN = "eeae3f"
 FAIL = "d00000"
 NOW = (new Date()).toTimestamp().getTime()/1000
-
-// environment variables / parameters
-
 
 /**
  * send a notification, using slack
@@ -27,7 +27,7 @@ def sendNotification(String action) {
     def steps = getValue("steps").tokenize(",")
     def logs = getValue("logs")
 
-    // now notify
+    // now notify (but only under certain conditions, as we do not want to send uninformative messages)
     if (customers.size() > 0 && steps.contains("Prod") && (adVersion != NA || jbVersion != NA)) {
         switch (action.toLowerCase()) {
             case "start":
@@ -55,7 +55,7 @@ def sendNotification(String action) {
                                 "may not have been upgraded: ${formatList(customers, true)}.")
                 break
             default:
-                // notifies that a deployment has just ended in a weird fashion
+                // notifies that a deployment has just ended... but in a weird fashion
                 sendDeployNotification(channels, WARN, adVersion, jbVersion, reason, issue, customers, steps, logs, "warning",
                         "Deployment of ${formatList(versions, false)} " +
                                 "to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} ended.",
@@ -211,7 +211,7 @@ def postPayload(String payload) {
 }
 
 /**
- * looks up for a value in the arguments, then the environment variables
+ * looks up for a value in the arguments (which get precedence), then the environment variables
  */
 String getValue(String name) {
     def val
@@ -226,6 +226,9 @@ String getValue(String name) {
     return (val ?: "")
 }
 
+/**
+ * Swing away Merrill!
+ */
 if (args.size() > 0) {
     def action = args[0]
     sendNotification(action)
