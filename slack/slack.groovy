@@ -189,7 +189,6 @@ def postPayload(String payload) {
     connection.addRequestProperty("Content-Type", "application/json")
 
     // posting payload to slack
-    // println(payload)
     connection.setRequestMethod("POST")
     connection.doOutput = true
     connection.outputStream.withWriter {
@@ -202,6 +201,7 @@ def postPayload(String payload) {
         connection.content.text
     } catch (IOException e) {
         try {
+            println(payload)
             println(((HttpURLConnection)connection).errorStream.text)
         } catch (Exception ignored) {
         } finally {
