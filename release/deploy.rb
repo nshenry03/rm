@@ -415,4 +415,4 @@ def deploy_jbilling_branch_to_prod(project, branch, environment)
 end
 
 
-deploy_jbilling_branch_to_prod 'jbilling', ENV['GitTag'], ENV['Environment']
+deploy_jbilling_branch_to_prod 'jbilling', ENV['billingVersion'], ENV['Environment']
