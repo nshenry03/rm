@@ -69,7 +69,8 @@ def sendNotification(String action) {
  * escape the provided string to make it json-safe
  */
 String escapeJson(String str) {
-    return str.replaceAll("\"", "")
+    // escape backslashes, then double quotes
+    return str.replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "\\\\\"")
 }
 
 /**
