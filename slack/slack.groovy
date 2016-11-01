@@ -188,6 +188,11 @@ def postPayload(String payload) {
     def connection = SLACK_URL.toURL().openConnection()
     connection.addRequestProperty("Content-Type", "application/json")
 
+    // for debugging purposes
+    new File("payload-${NOW}.json").withWriter { out ->
+        out.println(payload)
+    }
+
     // posting payload to slack
     connection.setRequestMethod("POST")
     connection.doOutput = true

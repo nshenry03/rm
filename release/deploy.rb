@@ -367,10 +367,6 @@ def deploy_jbilling_branch_to_prod(project, branch, environment)
           dist_host: DistHost.new('52.90.138.131'),
           nodes: %w(stage0-bill-batch01 stage0-bill-app01 stage0-bill-app02)
       },
-      prod_appcarousel: {
-          dist_host: DistHost.new('52.87.125.109'),
-          nodes: %w(prod-appcarousel00-bill-batch01 prod-appcarousel00-bill-app01 prod-appcarousel00-bill-app02)
-      },
       prod_aws_de: {
           dist_host: DistHost.new('52.28.6.22'),
           nodes: %w(prod-de00-bill-batch01 prod-de00-bill-app01 prod-de00-bill-app02)
