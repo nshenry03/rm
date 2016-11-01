@@ -190,7 +190,7 @@ def postPayload(String payload) {
 
     try {
         // for debugging purposes
-        new File("payload-${NOW}.json").withWriter { out ->
+        new File(getValue("WORKSPACE") + "/payload-${NOW}.json").withWriter { out ->
             out.println(payload)
         }
     } catch (Exception ignored) {
