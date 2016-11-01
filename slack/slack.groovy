@@ -86,6 +86,16 @@ String formatList(ArrayList items, boolean bold) {
 }
 
 /**
+ *
+ */
+String escapeJson(String plainString) {
+    def jsonString = plainString
+    jsonString.replaceAll("\"", "\\\"")
+    jsonString.replaceAll("\\", "\\\\")
+    return jsonString
+}
+
+/**
  * posts a deployment notification to the specified slack channels
  */
 def sendDeployNotification(ArrayList channels, String color, String adVersion, String jbVersion,
@@ -129,7 +139,7 @@ def sendDeployNotification(ArrayList channels, String color, String adVersion, S
         attachment += """,
                {
                     "title": "Logs",
-                    "value": "```${logs}```",
+                    "value": "```${escapeJson(logs)}```",
                     "short": false
                }
         """
