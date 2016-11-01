@@ -66,6 +66,13 @@ def sendNotification(String action) {
 }
 
 /**
+ * escape the provided string to make it json-safe
+ */
+String escapeJson(String str) {
+    return str.replaceAll("\"", "")
+}
+
+/**
  * formats an issue into a link
  */
 String formatIssue(String issue) {
@@ -85,15 +92,6 @@ String formatList(ArrayList items, boolean bold) {
     return text
 }
 
-/**
- *
- */
-String escapeJson(String plainString) {
-    def jsonString = plainString
-    jsonString.replaceAll("\"", "\\\"")
-    jsonString.replaceAll("\\", "\\\\")
-    return jsonString
-}
 
 /**
  * posts a deployment notification to the specified slack channels
@@ -105,33 +103,33 @@ def sendDeployNotification(ArrayList channels, String color, String adVersion, S
       {
           "mrkdwn_in": ["pretext", "text", "fields"],
           "color": "#${color}",
-          "fallback": "${fallback}",
-          "title": "${reason}",
-          "title_link": "${getValue("BUILD_URL")}",
+          "fallback": "${escapeJson(fallback)}",
+          "title": "${escapeJson(reason)}",
+          "title_link": "${escapeJson(getValue("BUILD_URL"))}",
           "fields": [
               {
                   "title": "AppDirect",
-                  "value": "${adVersion}",
+                  "value": "${escapeJson(adVersion)}",
                   "short": true
               },
               {
                   "title": "JBilling",
-                  "value": "${jbVersion}",
+                  "value": "${escapeJson(jbVersion)}",
                   "short": true
               },
               {
                   "title": "JIRA Issue",
-                  "value": "${formatIssue(issue)}",
+                  "value": "${escapeJson(formatIssue(issue))}",
                   "short": true
               },
               {
                   "title": "Step${steps.size > 1 ? "s" : ""}",
-                  "value": "${formatList(steps, false)}",
+                  "value": "${escapeJson(formatList(steps, false))}",
                   "short": true
               },
               {
                   "title": "Description",
-                  "value": "${desc}",
+                  "value": "${escapeJson(desc)}",
                   "short": false
               }
     """
