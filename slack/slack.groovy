@@ -24,43 +24,79 @@ def sendNotification(String action) {
     def reason = getValue("reason")
     def issue = getValue("issue").toUpperCase()
     def customers = getValue("customers").tokenize(",")
+    def customer = getValue("customer")
     def steps = getValue("steps").tokenize(",")
     def logs = getValue("logs")
 
     // now notify (but only under certain conditions, as we do not want to send uninformative messages)
-    if (customers.size() > 0 && steps.contains("Prod") && (adVersion != NA || jbVersion != NA)) {
+    if ((customers.size() > 0 || !customer.allWhitespace) && steps.contains("Prod") && (adVersion != NA || jbVersion != NA)) {
         switch (action.toLowerCase()) {
             case "start":
                 // notifies that a deployment has just been launched
-                sendDeployNotification(channels, MUTE, adVersion, jbVersion, reason, issue, customers, steps, "", "rocket",
-                        "Deployment of ${formatList(versions, false)} " +
-                                "to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} launched.",
-                        "The following marketplace${customers.size > 1 ? "s" : ""} " +
-                                "will be upgraded: ${formatList(customers, true)}.")
+                if (customers.size() > 0) {
+                    // sent only when upgrading multiple marketplaces
+                    sendDeployNotification(channels, MUTE, adVersion, jbVersion, reason, issue, customers, steps, "", "rocket",
+                            "Deployment of ${formatList(versions, false)} " +
+                                    "to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} launched.",
+                            "The following marketplace${customers.size > 1 ? "s" : ""} " +
+                                    "will be upgraded: ${formatList(customers, true)}.")
+                } else if (!customer.allWhitespace) {
+                    // sent only when upgrading a single marketplace
+                    sendDeployNotification(channels, MUTE, adVersion, jbVersion, reason, issue, [customer], steps, "", "rocket",
+                            "Deployment of ${formatList(versions, false)} to ${customer} launched.",
+                            "The following marketplace will be upgraded: *${customer}*.")
+                }
                 break
             case "success":
                 // notifies that a deployment has just been completed successfully
-                sendDeployNotification(channels, INFO, adVersion, jbVersion, reason, issue, customers, steps, "", "checkered_flag",
-                        "Deployment of ${formatList(versions, false)} " +
-                                "to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} completed.",
-                        "The following marketplace${customers.size > 1 ? "s" : ""} " +
-                                "ha${customers.size > 1 ? "ve" : "s"} been upgraded: ${formatList(customers, true)}.")
+                if (customers.size() > 0) {
+                    // sent only when upgrading multiple marketplaces
+                    sendDeployNotification(channels, INFO, adVersion, jbVersion, reason, issue, customers, steps, "", "checkered_flag",
+                            "Deployment of ${formatList(versions, false)} " +
+                                    "to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} completed.",
+                            "The following marketplace${customers.size > 1 ? "s" : ""} " +
+                                    "ha${customers.size > 1 ? "ve" : "s"} been upgraded: ${formatList(customers, true)}.")
+                }
+                if (!customer.allWhitespace) {
+                    // sent for every upgraded marketplace
+                    sendDeployNotification(channels, INFO, adVersion, jbVersion, reason, issue, [customer], steps, "", "checkered_flag",
+                            "Deployment of ${formatList(versions, false)} to ${customer} completed.",
+                            "The following marketplace has been upgraded: *${customer}*.")
+                }
                 break
             case "failure":
                 // notifies that a deployment has just failed
-                sendDeployNotification(channels, FAIL, adVersion, jbVersion, reason, issue, customers, steps, logs, "bomb",
-                        "Deployment of ${formatList(versions, false)} " +
-                            "to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} failed.",
-                        "The following marketplace${customers.size > 1 ? "s" : ""} " +
-                                "may not have been upgraded: ${formatList(customers, true)}.")
+                if (customers.size() > 0) {
+                    // sent only when upgrading multiple marketplaces
+                    sendDeployNotification(channels, FAIL, adVersion, jbVersion, reason, issue, customers, steps, logs, "bomb",
+                            "Deployment of ${formatList(versions, false)} " +
+                                    "to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} failed.",
+                            "The following marketplace${customers.size > 1 ? "s" : ""} " +
+                                    "may not have been upgraded: ${formatList(customers, true)}.")
+                }
+                if (!customer.allWhitespace) {
+                    // sent for every upgraded marketplace
+                    sendDeployNotification(channels, FAIL, adVersion, jbVersion, reason, issue, [customer], steps, logs, "bomb",
+                            "Deployment of ${formatList(versions, false)} to ${customer} failed.",
+                            "The following marketplace has not been upgraded: *${customer}*.")
+                }
                 break
             default:
                 // notifies that a deployment has just ended... but in a weird fashion
-                sendDeployNotification(channels, WARN, adVersion, jbVersion, reason, issue, customers, steps, logs, "warning",
-                        "Deployment of ${formatList(versions, false)} " +
-                                "to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} ended.",
-                        "The following marketplace${customers.size > 1 ? "s" : ""} " +
-                                "may not have been upgraded: ${formatList(customers, true)}.")
+                if (customers.size() > 0) {
+                    // sent only when upgrading multiple marketplaces
+                    sendDeployNotification(channels, WARN, adVersion, jbVersion, reason, issue, customers, steps, logs, "warning",
+                            "Deployment of ${formatList(versions, false)} " +
+                                    "to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} ended.",
+                            "The following marketplace${customers.size > 1 ? "s" : ""} " +
+                                    "may not have been upgraded: ${formatList(customers, true)}.")
+                }
+                if (!customer.allWhitespace) {
+                    // sent for every upgraded marketplace
+                    sendDeployNotification(channels, WARN, adVersion, jbVersion, reason, issue, [customer], steps, logs, "warning",
+                            "Deployment of ${formatList(versions, false)} to ${customer} ended.",
+                            "The following marketplace may not have been upgraded: *${customer}*.")
+                }
         }
     }
 }
