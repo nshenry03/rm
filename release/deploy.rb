@@ -363,35 +363,35 @@ def deploy_jbilling_branch_to_prod(project, branch, environment)
   puts "* Deploying #{project} branch #{branch} to #{environment}"
 
   environments_map = {
-      prod_staging: {
+      "prod-staging": {
           dist_host: DistHost.new('52.90.138.131'),
           nodes: %w(stage0-bill-batch01 stage0-bill-app01 stage0-bill-app02)
       },
-      prod_aws_de: {
+      "prod-aws-de": {
           dist_host: DistHost.new('52.28.6.22'),
           nodes: %w(prod-de00-bill-batch01 prod-de00-bill-app01 prod-de00-bill-app02)
       },
-      prod_aws_kor: {
+      "prod-aws-kor": {
           dist_host: DistHost.new('prod-kor00-distribution01'),
           nodes: %w(prod-kor00-bill-batch01 prod-kor00-bill-app01 prod-kor00-bill-app02)
       },
-      prod_aws_us: {
+      "prod-aws-us": {
           dist_host: DistHost.new('54.84.27.181'),
           nodes: %w(prod-aws00-bill-batch01 prod-aws00-bill-app01 prod-aws00-bill-app02)
       },
-      prod_elisa: {
+      "prod-elisa": {
           dist_host: DistHost.new('193.66.8.195'),
           nodes: %w(prod-elisa-hel-bill-batch01 prod-elisa-hel-bill-app01 prod-elisa-hel-bill-app02)
       },
-      prod_ibm: {
+      "prod-ibm": {
           dist_host: DistHost.new('184.172.109.235'),
           nodes: %w(prod-ibm-dal-bill-batch1 prod-ibm-dal-bill-app1 prod-ibm-dal-bill-app2)
       },
-      prod_swisscom: {
+      "prod-swisscom": {
           dist_host: DistHost.new('193.246.34.223'),
           nodes: %w(prod-swiss00-bill-batch01 prod-swiss00-bill-app01 prod-swiss00-bill-app02)
       },
-      prod_telstra: {
+      "prod-telstra": {
           dist_host: DistHost.new('54.206.33.245'),
           nodes: %w(prod-tel-ap2-bill-batch01 prod-tel-ap2-bill-app01 prod-tel-ap2-bill-app02)
       }
