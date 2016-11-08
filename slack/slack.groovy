@@ -28,6 +28,20 @@ def sendNotification(String action) {
     def steps = getValue("steps").tokenize(",")
     def logs = getValue("logs")
 
+    // debug
+    println("----------")
+    println("channels: ${channels}")
+    println("adVersion: ${adVersion}")
+    println("jbVersion: ${jbVersion}")
+    println("reason: ${reason}")
+    println("issue: ${issue}")
+    println("customers: ${customers}")
+    println("customer: ${customer}")
+    println("steps: ${steps}")
+    println("logs: ${logs}")
+    println("----------")
+
+
     // now notify (but only under certain conditions, as we do not want to send uninformative messages)
     if ((customers.size() > 0 || !customer.allWhitespace) && steps.contains("Prod") && (adVersion != NA || jbVersion != NA)) {
         switch (action.toLowerCase()) {
