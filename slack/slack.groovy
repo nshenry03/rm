@@ -298,11 +298,8 @@ String getValue(String name) {
 /**
  * Swing away Merrill!
  */
-if (args.size() > 0) {
-    def action = args[0]
-    if (action.contains(':')) {
-        // default behaviour
-        action = "START"
-    }
-    sendNotification(action)
+def action = "START"
+if (args.size() > 0 && !args[0].contains(':')) {
+    action = args[0]
 }
+sendNotification(action)
