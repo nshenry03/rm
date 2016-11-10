@@ -38,7 +38,7 @@ def sendNotification(String action) {
     println("issue: '${issue}'")
     println("customers: ${customers}")
     println("customer: '${customer}'")
-    println("steps: '${steps}'")
+    println("steps: ${steps}")
     println("logs: '${logs}'")
     println("----------")
 
@@ -48,7 +48,7 @@ def sendNotification(String action) {
         switch (action.toUpperCase()) {
             case "START":
                 // notifies that a deployment has just been launched
-                if (customers.size() > 0) {
+                if (customers.size() > 0 && customer.allWhitespace) {
                     // sent only when upgrading multiple marketplaces
                     sendDeployNotification(action, channels, MUTE, adVersion, jbVersion, reason, issue, customers, steps, "", "rocket",
                             "Deployment of ${formatList(versions, false)} " +
