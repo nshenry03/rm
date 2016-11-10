@@ -59,9 +59,10 @@ def sendNotification(String action) {
                     }
                 } else if (!customer.allWhitespace) {
                     // sent only when upgrading a single marketplace
-                    sendDeployNotification(action, channels, MUTE, adVersion, jbVersion, reason, issue, [customer], steps, "", "rocket",
+                    sendDeployNotification(action, channels, MUTE, adVersion, jbVersion,
                             "Deployment of ${formatList(versions, false)} to ${customer} launched.",
-                            "The following marketplace will be upgraded: *${customer}*.")
+                            issue, [customer], steps, "", "rocket",
+                            "Deployment of ${formatList(versions, false)} to ${customer} launched.", "")
                 }
                 break
             case "SUCCESS":
@@ -76,9 +77,10 @@ def sendNotification(String action) {
                 }
                 if (!customer.allWhitespace) {
                     // sent for every upgraded marketplace
-                    sendDeployNotification(action, channels, INFO, adVersion, jbVersion, reason, issue, [customer], steps, "", "checkered_flag",
+                    sendDeployNotification(action, channels, INFO, adVersion, jbVersion,
                             "Deployment of ${formatList(versions, false)} to ${customer} completed.",
-                            "The following marketplace has been upgraded: *${customer}*.")
+                            issue, [customer], steps, "", "checkered_flag",
+                            "Deployment of ${formatList(versions, false)} to ${customer} completed.", "")
                 }
                 break
             case "FAILURE":
@@ -93,9 +95,10 @@ def sendNotification(String action) {
                 }
                 if (!customer.allWhitespace) {
                     // sent for every upgraded marketplace
-                    sendDeployNotification(action, channels, FAIL, adVersion, jbVersion, reason, issue, [customer], steps, logs, "bomb",
+                    sendDeployNotification(action, channels, FAIL, adVersion, jbVersion,
                             "Deployment of ${formatList(versions, false)} to ${customer} failed.",
-                            "The following marketplace has not been upgraded: *${customer}*.")
+                            issue, [customer], steps, logs, "bomb",
+                            "Deployment of ${formatList(versions, false)} to ${customer} failed.", "")
                 }
                 break
             default:
@@ -110,9 +113,10 @@ def sendNotification(String action) {
                 }
                 if (!customer.allWhitespace) {
                     // sent for every upgraded marketplace
-                    sendDeployNotification(action, channels, WARN, adVersion, jbVersion, reason, issue, [customer], steps, logs, "warning",
+                    sendDeployNotification(action, channels, WARN, adVersion, jbVersion,
                             "Deployment of ${formatList(versions, false)} to ${customer} ended.",
-                            "The following marketplace may not have been upgraded: *${customer}*.")
+                            issue, [customer], steps, logs, "warning",
+                            "Deployment of ${formatList(versions, false)} to ${customer} ended.", "")
                 }
         }
     }
@@ -151,14 +155,14 @@ String formatList(ArrayList items, boolean bold) {
  * posts a deployment notification to the specified slack channels
  */
 def sendDeployNotification(String action, ArrayList channels, String color, String adVersion, String jbVersion,
-        String reason, String issue, ArrayList customers, ArrayList steps, String logs, String emoji,
+        String title, String issue, ArrayList customers, ArrayList steps, String logs, String emoji,
         String fallback, String desc) {
     def attachment = """
       {
           "mrkdwn_in": ["pretext", "text", "fields"],
           "color": "#${color}",
           "fallback": "[${action}] ${escapeJson(fallback)}",
-          "title": "[${action}] ${escapeJson(reason)}",
+          "title": "[${action}] ${escapeJson(title)}",
           "title_link": "${escapeJson(getValue("BUILD_URL"))}",
           "fields": [
               {
@@ -180,13 +184,17 @@ def sendDeployNotification(String action, ArrayList channels, String color, Stri
                   "title": "Step${steps.size > 1 ? "s" : ""}",
                   "value": "${escapeJson(formatList(steps, false))}",
                   "short": true
-              },
+              }
+    """
+    if (!desc.allWhitespace) {
+        attachment += """,
               {
                   "title": "Description",
                   "value": "${escapeJson(desc)}",
                   "short": false
               }
-    """
+        """
+    }
     if (!logs.allWhitespace) {
         attachment += """,
                {
@@ -198,7 +206,7 @@ def sendDeployNotification(String action, ArrayList channels, String color, Stri
     }
     attachment += """
           ],
-          "footer": "${emoji.allWhitespace ?: ":$emoji: "}Build ${getValue("BUILD_NUMBER")} started by ${getValue("BUILD_USER")}",
+          "footer": "${emoji.allWhitespace ?: ":$emoji: "}Build ${getValue("JOB_NAME")} #${getValue("BUILD_NUMBER")} started by ${getValue("BUILD_USER")}",
           "ts": ${NOW}
       }
     """
@@ -304,4 +312,4 @@ def action = "START"
 if (args.size() > 0 && !args[0].contains(':')) {
     action = args[0]
 }
-sendNotification(action)
+sendNotification(action.toUpperCase())
