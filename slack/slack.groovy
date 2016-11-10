@@ -206,7 +206,7 @@ def sendDeployNotification(String action, ArrayList channels, String color, Stri
     }
     attachment += """
           ],
-          "footer": "${emoji.allWhitespace ?: ":$emoji: "}Build ${getValue("JOB_NAME")} #${getValue("BUILD_NUMBER")} started by ${getValue("BUILD_USER")}",
+          "footer": "${emoji.allWhitespace ?: ":$emoji: "}${getValue("JOB_NAME")} #${getValue("BUILD_NUMBER")} started by ${getValue("BUILD_USER")}",
           "ts": ${NOW}
       }
     """
