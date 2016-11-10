@@ -30,42 +30,43 @@ def sendNotification(String action) {
 
     // debug
     println("----------")
+    println("action: '${action}'")
     println("channels: ${channels}")
-    println("adVersion: ${adVersion}")
-    println("jbVersion: ${jbVersion}")
-    println("reason: ${reason}")
-    println("issue: ${issue}")
+    println("adVersion: '${adVersion}'")
+    println("jbVersion: '${jbVersion}'")
+    println("reason: '${reason}'")
+    println("issue: '${issue}'")
     println("customers: ${customers}")
-    println("customer: ${customer}")
-    println("steps: ${steps}")
-    println("logs: ${logs}")
+    println("customer: '${customer}'")
+    println("steps: '${steps}'")
+    println("logs: '${logs}'")
     println("----------")
 
 
     // now notify (but only under certain conditions, as we do not want to send uninformative messages)
     if ((customers.size() > 0 || !customer.allWhitespace) && steps.contains("Prod") && (adVersion != NA || jbVersion != NA)) {
-        switch (action.toLowerCase()) {
-            case "start":
+        switch (action.toUpperCase()) {
+            case "START":
                 // notifies that a deployment has just been launched
                 if (customers.size() > 0) {
                     // sent only when upgrading multiple marketplaces
-                    sendDeployNotification(channels, MUTE, adVersion, jbVersion, reason, issue, customers, steps, "", "rocket",
+                    sendDeployNotification(action, channels, MUTE, adVersion, jbVersion, reason, issue, customers, steps, "", "rocket",
                             "Deployment of ${formatList(versions, false)} " +
                                     "to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} launched.",
                             "The following marketplace${customers.size > 1 ? "s" : ""} " +
                                     "will be upgraded: ${formatList(customers, true)}.")
                 } else if (!customer.allWhitespace) {
                     // sent only when upgrading a single marketplace
-                    sendDeployNotification(channels, MUTE, adVersion, jbVersion, reason, issue, [customer], steps, "", "rocket",
+                    sendDeployNotification(action, channels, MUTE, adVersion, jbVersion, reason, issue, [customer], steps, "", "rocket",
                             "Deployment of ${formatList(versions, false)} to ${customer} launched.",
                             "The following marketplace will be upgraded: *${customer}*.")
                 }
                 break
-            case "success":
+            case "SUCCESS":
                 // notifies that a deployment has just been completed successfully
                 if (customers.size() > 0) {
                     // sent only when upgrading multiple marketplaces
-                    sendDeployNotification(channels, INFO, adVersion, jbVersion, reason, issue, customers, steps, "", "checkered_flag",
+                    sendDeployNotification(action, channels, INFO, adVersion, jbVersion, reason, issue, customers, steps, "", "checkered_flag",
                             "Deployment of ${formatList(versions, false)} " +
                                     "to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} completed.",
                             "The following marketplace${customers.size > 1 ? "s" : ""} " +
@@ -73,16 +74,16 @@ def sendNotification(String action) {
                 }
                 if (!customer.allWhitespace) {
                     // sent for every upgraded marketplace
-                    sendDeployNotification(channels, INFO, adVersion, jbVersion, reason, issue, [customer], steps, "", "checkered_flag",
+                    sendDeployNotification(action, channels, INFO, adVersion, jbVersion, reason, issue, [customer], steps, "", "checkered_flag",
                             "Deployment of ${formatList(versions, false)} to ${customer} completed.",
                             "The following marketplace has been upgraded: *${customer}*.")
                 }
                 break
-            case "failure":
+            case "FAILURE":
                 // notifies that a deployment has just failed
                 if (customers.size() > 0) {
                     // sent only when upgrading multiple marketplaces
-                    sendDeployNotification(channels, FAIL, adVersion, jbVersion, reason, issue, customers, steps, logs, "bomb",
+                    sendDeployNotification(action, channels, FAIL, adVersion, jbVersion, reason, issue, customers, steps, logs, "bomb",
                             "Deployment of ${formatList(versions, false)} " +
                                     "to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} failed.",
                             "The following marketplace${customers.size > 1 ? "s" : ""} " +
@@ -90,7 +91,7 @@ def sendNotification(String action) {
                 }
                 if (!customer.allWhitespace) {
                     // sent for every upgraded marketplace
-                    sendDeployNotification(channels, FAIL, adVersion, jbVersion, reason, issue, [customer], steps, logs, "bomb",
+                    sendDeployNotification(action, channels, FAIL, adVersion, jbVersion, reason, issue, [customer], steps, logs, "bomb",
                             "Deployment of ${formatList(versions, false)} to ${customer} failed.",
                             "The following marketplace has not been upgraded: *${customer}*.")
                 }
@@ -99,7 +100,7 @@ def sendNotification(String action) {
                 // notifies that a deployment has just ended... but in a weird fashion
                 if (customers.size() > 0) {
                     // sent only when upgrading multiple marketplaces
-                    sendDeployNotification(channels, WARN, adVersion, jbVersion, reason, issue, customers, steps, logs, "warning",
+                    sendDeployNotification(action, channels, WARN, adVersion, jbVersion, reason, issue, customers, steps, logs, "warning",
                             "Deployment of ${formatList(versions, false)} " +
                                     "to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} ended.",
                             "The following marketplace${customers.size > 1 ? "s" : ""} " +
@@ -107,7 +108,7 @@ def sendNotification(String action) {
                 }
                 if (!customer.allWhitespace) {
                     // sent for every upgraded marketplace
-                    sendDeployNotification(channels, WARN, adVersion, jbVersion, reason, issue, [customer], steps, logs, "warning",
+                    sendDeployNotification(action, channels, WARN, adVersion, jbVersion, reason, issue, [customer], steps, logs, "warning",
                             "Deployment of ${formatList(versions, false)} to ${customer} ended.",
                             "The following marketplace may not have been upgraded: *${customer}*.")
                 }
@@ -147,15 +148,15 @@ String formatList(ArrayList items, boolean bold) {
 /**
  * posts a deployment notification to the specified slack channels
  */
-def sendDeployNotification(ArrayList channels, String color, String adVersion, String jbVersion,
+def sendDeployNotification(String action, ArrayList channels, String color, String adVersion, String jbVersion,
         String reason, String issue, ArrayList customers, ArrayList steps, String logs, String emoji,
         String fallback, String desc) {
     def attachment = """
       {
           "mrkdwn_in": ["pretext", "text", "fields"],
           "color": "#${color}",
-          "fallback": "${escapeJson(fallback)}",
-          "title": "${escapeJson(reason)}",
+          "fallback": "[${action}] ${escapeJson(fallback)}",
+          "title": "[${action}] ${escapeJson(reason)}",
           "title_link": "${escapeJson(getValue("BUILD_URL"))}",
           "fields": [
               {
@@ -299,5 +300,9 @@ String getValue(String name) {
  */
 if (args.size() > 0) {
     def action = args[0]
+    if (action.contains(':')) {
+        // default behaviour
+        action = "START"
+    }
     sendNotification(action)
 }
