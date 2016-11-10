@@ -48,13 +48,15 @@ def sendNotification(String action) {
         switch (action.toUpperCase()) {
             case "START":
                 // notifies that a deployment has just been launched
-                if (customers.size() > 0 && customer.allWhitespace) {
-                    // sent only when upgrading multiple marketplaces
-                    sendDeployNotification(action, channels, MUTE, adVersion, jbVersion, reason, issue, customers, steps, "", "rocket",
-                            "Deployment of ${formatList(versions, false)} " +
-                                    "to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} launched.",
-                            "The following marketplace${customers.size > 1 ? "s" : ""} " +
-                                    "will be upgraded: ${formatList(customers, true)}.")
+                if (customers.size() > 0) {
+                    if (customer.allWhitespace) {
+                        // sent only when upgrading multiple marketplaces
+                        sendDeployNotification(action, channels, MUTE, adVersion, jbVersion, reason, issue, customers, steps, "", "rocket",
+                                "Deployment of ${formatList(versions, false)} " +
+                                        "to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} launched.",
+                                "The following marketplace${customers.size > 1 ? "s" : ""} " +
+                                        "will be upgraded: ${formatList(customers, true)}.")
+                    }
                 } else if (!customer.allWhitespace) {
                     // sent only when upgrading a single marketplace
                     sendDeployNotification(action, channels, MUTE, adVersion, jbVersion, reason, issue, [customer], steps, "", "rocket",
