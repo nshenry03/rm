@@ -66,7 +66,7 @@ def sendNotification(String action) {
                 break
             case "SUCCESS":
                 // notifies that a deployment has just been completed successfully
-                if (customers.size() > 0) {
+                if (customers.size() > 0 && customer.allWhitespace) {
                     // sent only when upgrading multiple marketplaces
                     sendDeployNotification(action, channels, INFO, adVersion, jbVersion, reason, issue, customers, steps, "", "checkered_flag",
                             "Deployment of ${formatList(versions, false)} " +
@@ -83,7 +83,7 @@ def sendNotification(String action) {
                 break
             case "FAILURE":
                 // notifies that a deployment has just failed
-                if (customers.size() > 0) {
+                if (customers.size() > 0 && customer.allWhitespace) {
                     // sent only when upgrading multiple marketplaces
                     sendDeployNotification(action, channels, FAIL, adVersion, jbVersion, reason, issue, customers, steps, logs, "bomb",
                             "Deployment of ${formatList(versions, false)} " +
@@ -100,7 +100,7 @@ def sendNotification(String action) {
                 break
             default:
                 // notifies that a deployment has just ended... but in a weird fashion
-                if (customers.size() > 0) {
+                if (customers.size() > 0 && customer.allWhitespace) {
                     // sent only when upgrading multiple marketplaces
                     sendDeployNotification(action, channels, WARN, adVersion, jbVersion, reason, issue, customers, steps, logs, "warning",
                             "Deployment of ${formatList(versions, false)} " +
