@@ -60,9 +60,9 @@ def sendNotification(String action) {
                 } else if (!customer.allWhitespace) {
                     // sent only when upgrading a single marketplace
                     sendDeployNotification(action, channels, MUTE, adVersion, jbVersion,
-                            "Deployment of ${formatList(versions, false)} to ${customer} launched.",
+                            "Upgrade of ${customer} launched.",
                             issue, [customer], steps, "", "rocket",
-                            "Deployment of ${formatList(versions, false)} to ${customer} launched.", "")
+                            "Upgrade of ${customer} to ${formatList(versions, false)} launched.", "")
                 }
                 break
             case "SUCCESS":
@@ -78,9 +78,9 @@ def sendNotification(String action) {
                 if (!customer.allWhitespace) {
                     // sent for every upgraded marketplace
                     sendDeployNotification(action, channels, INFO, adVersion, jbVersion,
-                            "Deployment of ${formatList(versions, false)} to ${customer} completed.",
+                            "Upgrade of ${customer} completed.",
                             issue, [customer], steps, "", "checkered_flag",
-                            "Deployment of ${formatList(versions, false)} to ${customer} completed.", "")
+                            "Upgrade of ${customer} to ${formatList(versions, false)} completed.", "")
                 }
                 break
             case "FAILURE":
@@ -96,9 +96,9 @@ def sendNotification(String action) {
                 if (!customer.allWhitespace) {
                     // sent for every upgraded marketplace
                     sendDeployNotification(action, channels, FAIL, adVersion, jbVersion,
-                            "Deployment of ${formatList(versions, false)} to ${customer} failed.",
+                            "Upgrade of ${customer} failed.",
                             issue, [customer], steps, logs, "bomb",
-                            "Deployment of ${formatList(versions, false)} to ${customer} failed.", "")
+                            "Upgrade of ${customer} to ${formatList(versions, false)} failed.", "")
                 }
                 break
             default:
@@ -114,9 +114,9 @@ def sendNotification(String action) {
                 if (!customer.allWhitespace) {
                     // sent for every upgraded marketplace
                     sendDeployNotification(action, channels, WARN, adVersion, jbVersion,
-                            "Deployment of ${formatList(versions, false)} to ${customer} ended.",
+                            "Upgrade of ${customer} ended.",
                             issue, [customer], steps, logs, "warning",
-                            "Deployment of ${formatList(versions, false)} to ${customer} ended.", "")
+                            "Upgrade of ${customer} to ${formatList(versions, false)} ended.", "")
                 }
         }
     }
