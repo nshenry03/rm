@@ -164,13 +164,21 @@ String formatList(ArrayList items, boolean bold) {
 def sendDeployNotification(String action, ArrayList channels, String color, String adVersion, String bulkVersion, String jbVersion,
         String title, String issue, ArrayList customers, ArrayList steps, String logs, String emoji,
         String fallback, String desc) {
+
+    // get a few more environment variables
+    def jobName = getValue("JOB_NAME")
+    def buildNumber = getValue("BUILD_NUMBER")
+    def buildUrl = getValue("BUILD_URL")
+    def buildUser = getValue("BUILD_USER")
+
+    // prepare attachment
     def attachment = """
       {
           "mrkdwn_in": ["pretext", "text", "fields"],
           "color": "#${color}",
           "fallback": "[${action}] ${escapeJson(fallback)}",
           "title": "[${action}] ${escapeJson(title)}",
-          "title_link": "${escapeJson(getValue("BUILD_URL"))}",
+          "title_link": "${escapeJson(buildUrl)}",
           "fields": [
               {
                   "title": "AppDirect",
@@ -222,9 +230,13 @@ def sendDeployNotification(String action, ArrayList channels, String color, Stri
                }
         """
     }
+    def footer = "${emoji.allWhitespace ?: ":$emoji: "}${jobName} #${buildNumber}"
+    if (!buildUser.allWhitespace) {
+        footer += " started by ${buildUser}"
+    }
     attachment += """
           ],
-          "footer": "${emoji.allWhitespace ?: ":$emoji: "}${getValue("JOB_NAME")} #${getValue("BUILD_NUMBER")} started by ${getValue("BUILD_USER")}",
+          "footer": "${footer}",
           "ts": ${NOW}
       }
     """
