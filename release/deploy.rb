@@ -136,7 +136,7 @@ class EndpointPool
   end
 
   def initialize(scheme, nodes, port, path, artifact_local_path, dist_host = nil, ping_host = nil?,
-                 local_user = 'aduser', key_file = File.join(Dir.home, '.ssh', 'aduser'), scp_port = 22)
+                 local_user = 'aduser', key_file = File.join(Dir.home, '.ssh', 'jenkins-appdirect'), scp_port = 22)
     @scheme = scheme
     @nodes = nodes
     @port = port
@@ -320,7 +320,7 @@ def deploy_branch(artifact, ping_endpoint_pool)
     puts "Success"
   rescue => e
     # Catch all errors and fail the build
-    puts "* Error: #{e}"
+    puts "* Error: #{e.message}"
     e.backtrace.each do |trace|
       puts "  - #{trace}"
     end
@@ -337,7 +337,7 @@ def alive?(endpoint, commit)
     # Ping health check URL
     content = tunnel_connection(endpoint.dist_host, endpoint.url) do |url|
       puts "      o Calling health check URL on #{endpoint.url} (#{url})"
-      RestClient.get(url.to_s)
+      RestClient::Request.execute(:url => url.to_s, :method => :get, :verify_ssl => false)
     end
 
     # Check health check content
@@ -351,7 +351,7 @@ def alive?(endpoint, commit)
       false
     end
   rescue => e
-    puts "        . Node #{endpoint.url.host} not fully started yet: #{e}"
+    puts "        . Node #{endpoint.url.host} not fully started yet: #{e.message}"
     false
   end
 end
@@ -385,7 +385,8 @@ def deploy_jbilling_branch_to_prod(project, branch, environment)
       },
       "prod-elisa": {
           dist_host: DistHost.new('193.66.8.195'),
-          nodes: %w(prod-elisa-hel-bill-batch01 prod-elisa-hel-bill-app01 prod-elisa-hel-bill-app02)
+          nodes: %w(prod-elisa-hel-bill-batch01 prod-elisa-hel-bill-app01 prod-elisa-hel-bill-app02),
+          scheme: "https"
       },
       "prod-ibm": {
           dist_host: DistHost.new('184.172.109.235'),
