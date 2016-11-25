@@ -142,6 +142,7 @@ func_generate() {
   echo "--- GENERATION ---"
   LIQUIBASE_DIR=/home/aduser/liquibase/bin
   LIQUIBASE_SCRIPT=liquibase_generate_dist.sh
+  cd ${SCRIPT_DIR}
   for i in "${DIST_HOSTS[@]}"; do
     echo ">>> $i"
     scp ${LIQUIBASE_SCRIPT} $i:${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT}
