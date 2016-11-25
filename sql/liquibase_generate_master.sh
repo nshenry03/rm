@@ -140,9 +140,6 @@ func_rsync() {
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 func_generate() {
   echo "--- GENERATION ---"
-  cd ${SCRIPT_DIR}
-  pwd
-  ls -al
   LIQUIBASE_DIR=/home/aduser/liquibase/bin
   LIQUIBASE_SCRIPT=liquibase_generate_dist.sh
   for i in "${DIST_HOSTS[@]}"; do
@@ -150,7 +147,9 @@ func_generate() {
     scp ${LIQUIBASE_SCRIPT} $i:${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT}
     ssh $i bash -x ${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT} ${APP} ${VERSION} >> ${TMPFILE} 2>&1
   done
-  #/bin/cat ${TMPFILE} | /bin/mail -s "Release SQL generated for ${APP} ${VERSION}" operations@appdirect.com
+  #EMAIL=operations@appdirect.com
+  EMAIL=joan.roch@appdirect.com
+  /bin/mail -s "Release SQL generated for ${APP} ${VERSION}" ${EMAIL} < ${TMPFILE}
   /bin/rm ${TMPFILE}
   echo "---"
   echo

@@ -43,4 +43,5 @@ echo "${CMD}"
 #eval ${CMD}
 
 #EMAIL="gary.barker@appdirect.com,kdonne.chick@appdirect.com,chhaya.patel@appdirect.com,sneha.agnihotri@appdirect.com"
-#mail -s "Liquibase Changes in ${APP} for Release ${VERSION}" ${EMAIL} < ${SQL_DIR}/${REPORT}
+EMAIL="joan.roch@appdirect.com"
+mail -s "Liquibase Changes in ${APP} for Release ${VERSION}" ${EMAIL} < ${SQL_DIR}/${REPORT}
