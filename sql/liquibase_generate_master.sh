@@ -132,10 +132,12 @@ func_rsync() {
 # IN: Y - Start LOGFILE
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 func_generate() {
+  LIQUIBASE_DIR=/home/aduser/liquibase/bin
+  LIQUIBASE_SCRIPT=liquibase_generate_dist.sh
   for i in "${DIST_HOSTS[@]}"; do
     echo $i
-    scp liquibase_release.sh $i:/home/aduser/liquibase/bin/liquibase_generate_dist.sh
-    #ssh $i bash -x /home/aduser/liquibase/bin/liquibase_generate_dist.sh ${APP} ${VERSION} >> ${TMPFILE} 2>&1
+    scp ${LIQUIBASE_SCRIPT} $i:${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT}
+    #ssh $i bash -x ${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT} ${APP} ${VERSION} >> ${TMPFILE} 2>&1
   done
   #/bin/cat ${TMPFILE} | /bin/mail -s "Release SQL generated for ${APP} ${VERSION}" operations@appdirect.com
   /bin/rm ${TMPFILE}
