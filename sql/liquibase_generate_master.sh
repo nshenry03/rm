@@ -15,10 +15,8 @@ APP=$1
 VERSION=$2
 
 # other variables
-SCRIPT_DIR=`dirname $0`
-BASE_DIR=${SCRIPT_DIR}/..
+SCRIPT_DIR=`pwd`
 TIMESTAMP=`date '+%Y%m%d_%H%M%S'`
-DATE=`date -I`
 LOGFILE_DEST=/home/aduser/liquibase/logs
 LOGFILE=${LOGFILE_DEST}/liquibase.${APP}.${VERSION}.${TIMESTAMP}.log
 TMPFILE=`/bin/mktemp`
