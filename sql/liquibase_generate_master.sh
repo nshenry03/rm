@@ -78,6 +78,7 @@ func_log() {
 # func_git_pull(): Get git version
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 func_git_pull() {
+  echo "--- GIT PULL ---"
   func_log "Checking out ${VERSION} source from GIT..."
   cd ${GIT_DIR} >> ${LOGFILE} 2>&1
 
@@ -108,6 +109,7 @@ func_git_pull() {
   else
     func_log "git checkout refs/tags/${VERSION} successful."
   fi
+  echo "---"
 }
 
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -117,12 +119,17 @@ func_git_pull() {
 # IN: Y - Start LOGFILE
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 func_rsync() {
-  for i in "${DIST_HOSTS[@]}" ; do rsync -aq --delete ${XML_DIR}/ $i:${TARGET_DIR} ; done
+  echo "--- RSYNC ---"
+  for i in "${DIST_HOSTS[@]}"; do
+    echo "--- $i"
+    rsync -aq --delete ${XML_DIR}/ $i:${TARGET_DIR}
+  done
   if [ ${?} -ne 0 ]; then
     func_log "rsync of ${VERSION} xml to dist host failed!" "Y"
   else
     func_log "rsync of ${VERSION} xml to dist host successful."
   fi
+  echo "---"
 }
 
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -132,18 +139,18 @@ func_rsync() {
 # IN: Y - Start LOGFILE
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 func_generate() {
+  echo "--- GENERATION ---"
+  cd ${SCRIPT_DIR}
   LIQUIBASE_DIR=/home/aduser/liquibase/bin
   LIQUIBASE_SCRIPT=liquibase_generate_dist.sh
   for i in "${DIST_HOSTS[@]}"; do
-    echo --- $i ---
-    pwd
-    ls -al
+    echo "--- $i"
     scp ${LIQUIBASE_SCRIPT} $i:${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT}
     #ssh $i bash -x ${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT} ${APP} ${VERSION} >> ${TMPFILE} 2>&1
-    echo --- --- ---
   done
   #/bin/cat ${TMPFILE} | /bin/mail -s "Release SQL generated for ${APP} ${VERSION}" operations@appdirect.com
   /bin/rm ${TMPFILE}
+  echo "---"
 }
 
 ######################
