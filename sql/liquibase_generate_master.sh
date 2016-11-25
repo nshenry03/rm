@@ -146,7 +146,6 @@ func_generate() {
   for i in "${DIST_HOSTS[@]}"; do
     echo ">>> $i"
     scp ${LIQUIBASE_SCRIPT} $i:${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT}
-    #ssh ${i} bash -e ${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT} ${APP} ${VERSION} >> ${TMPFILE} 2>&1
     ssh ${i} bash -e ${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT} ${APP} ${VERSION} | tee -a ${TMPFILE} 2>&1
   done
 
