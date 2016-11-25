@@ -146,14 +146,13 @@ func_generate() {
   for i in "${DIST_HOSTS[@]}"; do
     echo ">>> $i"
     scp ${LIQUIBASE_SCRIPT} $i:${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT}
-    ssh $i bash -x ${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT} ${APP} ${VERSION} >> ${TMPFILE} 2>&1
+    #ssh ${i} bash -e -x ${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT} ${APP} ${VERSION} >> ${TMPFILE} 2>&1
+    ssh ${i} bash -e -x ${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT} ${APP} ${VERSION} | tee -a ${TMPFILE} 2>&1
   done
 
   # EMAIL=operations@appdirect.com
   EMAIL=joan.roch@appdirect.com
-  cat ${TMPFILE}
-  #cat ${TMPFILE} | /bin/mail -s "Release SQL generated for ${APP} ${VERSION}" ${EMAIL}
-  /bin/rm ${TMPFILE}
+  cat ${TMPFILE} | /bin/mail -s "Release SQL generated for ${APP} ${VERSION}" ${EMAIL}
   echo "---"
   echo
 }
