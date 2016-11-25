@@ -120,7 +120,7 @@ func_git_pull() {
 func_rsync() {
   echo "--- RSYNC ---"
   for i in "${DIST_HOSTS[@]}"; do
-    echo "--- $i"
+    echo ">>> $i"
     rsync -aq --delete ${XML_DIR}/ $i:${TARGET_DIR}
   done
   if [ ${?} -ne 0 ]; then
@@ -146,9 +146,9 @@ func_generate() {
   LIQUIBASE_DIR=/home/aduser/liquibase/bin
   LIQUIBASE_SCRIPT=liquibase_generate_dist.sh
   for i in "${DIST_HOSTS[@]}"; do
-    echo "--- $i"
+    echo ">>> $i"
     scp ${LIQUIBASE_SCRIPT} $i:${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT}
-    #ssh $i bash -x ${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT} ${APP} ${VERSION} >> ${TMPFILE} 2>&1
+    ssh $i bash -x ${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT} ${APP} ${VERSION} >> ${TMPFILE} 2>&1
   done
   #/bin/cat ${TMPFILE} | /bin/mail -s "Release SQL generated for ${APP} ${VERSION}" operations@appdirect.com
   /bin/rm ${TMPFILE}

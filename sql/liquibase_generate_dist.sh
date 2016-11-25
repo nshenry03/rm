@@ -39,7 +39,7 @@ CMD="cd ${APP_DIR}; /usr/bin/liquibase --logLevel=severe --defaultsFile=${CONF_D
 
 # execute
 echo "Getting SQL for ${APP} DB for Release ${VERSION}"
-echo ${CMD}
+echo "${CMD}"
 #eval ${CMD}
 
 #EMAIL="gary.barker@appdirect.com,kdonne.chick@appdirect.com,chhaya.patel@appdirect.com,sneha.agnihotri@appdirect.com"
