@@ -135,9 +135,12 @@ func_generate() {
   LIQUIBASE_DIR=/home/aduser/liquibase/bin
   LIQUIBASE_SCRIPT=liquibase_generate_dist.sh
   for i in "${DIST_HOSTS[@]}"; do
-    echo $i
+    echo --- $i ---
+    pwd
+    ls -al
     scp ${LIQUIBASE_SCRIPT} $i:${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT}
     #ssh $i bash -x ${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT} ${APP} ${VERSION} >> ${TMPFILE} 2>&1
+    echo --- --- ---
   done
   #/bin/cat ${TMPFILE} | /bin/mail -s "Release SQL generated for ${APP} ${VERSION}" operations@appdirect.com
   /bin/rm ${TMPFILE}
