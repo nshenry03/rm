@@ -35,12 +35,12 @@ case "${APP}" in
     LOG_FILE="${APP_DIR}/jbilling-changeLog.xml"
     ;;
 esac
-CMD="cd ${APP_DIR}; /usr/bin/liquibase --logLevel=severe --defaultsFile=${CONF_DIR}/${APP}.conf --changeLogFile=${LOG_FILE} updateSQL > ${SQL_DIR}/${REPORT}"
+CMD="cd ${APP_DIR}; /usr/bin/liquibase --logLevel=severe --defaultsFile=${CONF_DIR}/${APP}.conf --changeLogFile=${LOG_FILE} updateSQL > ${SQL_DIR}/${REPORT} 2>&1"
 
 # execute
-echo "Getting SQL for ${APP} DB for Release ${VERSION}"
+echo "`hostname` - Getting SQL for ${APP} DB for Release ${VERSION}"
 eval ${CMD}
 
 #EMAIL="gary.barker@appdirect.com,kdonne.chick@appdirect.com,chhaya.patel@appdirect.com,sneha.agnihotri@appdirect.com"
 EMAIL="joan.roch@appdirect.com"
-mail -s "Liquibase Changes in ${APP} for Release ${VERSION}" ${EMAIL} < ${SQL_DIR}/${REPORT}
+mail -s "`hostname` - Liquibase Changes in ${APP} for Release ${VERSION}" ${EMAIL} < ${SQL_DIR}/${REPORT}
