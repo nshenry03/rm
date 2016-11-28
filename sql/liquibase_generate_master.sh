@@ -145,11 +145,12 @@ func_generate() {
   LIQUIBASE_DIR=/home/aduser/liquibase/bin
 ###  LIQUIBASE_SCRIPT=liquibase_generate_dist.sh
   LIQUIBASE_SCRIPT=liquibase_release-stage0-aws-ae1-dist02.sh
+  LIQUIBASE_SCRIPT=liquibase_release.sh
   cd ${SCRIPT_DIR}
   for i in "${DIST_HOSTS[@]}"; do
     echo ">>> $i"
-    scp ${LIQUIBASE_SCRIPT} $i:${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT}
-    ssh ${i} bash -x ${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT} ${APP} ${VERSION} | tee -a ${TMPFILE} 2>&1
+###    scp ${LIQUIBASE_SCRIPT} $i:${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT}
+    ssh ${i} bash -e -x ${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT} ${APP} ${VERSION} | tee -a ${TMPFILE} 2>&1
   done
 
 ###  EMAIL=operations@appdirect.com
