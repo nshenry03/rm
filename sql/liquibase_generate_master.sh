@@ -141,12 +141,13 @@ func_rsync() {
 func_generate() {
   echo "--- GENERATION ---"
   LIQUIBASE_DIR=/home/aduser/liquibase/bin
-  LIQUIBASE_SCRIPT=liquibase_generate_dist.sh
+  #LIQUIBASE_SCRIPT=liquibase_generate_dist.sh
+  LIQUIBASE_SCRIPT=liquibase_release-stage0-aws-ae1-dist02.sh
   cd ${SCRIPT_DIR}
   for i in "${DIST_HOSTS[@]}"; do
     echo ">>> $i"
     scp ${LIQUIBASE_SCRIPT} $i:${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT}
-    ssh ${i} bash -e ${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT} ${APP} ${VERSION} | tee -a ${TMPFILE} 2>&1
+    ssh ${i} bash -x ${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT} ${APP} ${VERSION} | tee -a ${TMPFILE} 2>&1
   done
 
   # EMAIL=operations@appdirect.com

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e -x
 
 export LIQUIBASE_HOME=/home/aduser/liquibase/
 
@@ -35,5 +35,5 @@ esac
 
 eval $CMD
 
-EMAIL="gary.barker@appdirect.com,kdonne.chick@appdirect.com,chhaya.patel@appdirect.com"
+# EMAIL="gary.barker@appdirect.com,kdonne.chick@appdirect.com,chhaya.patel@appdirect.com"
 # mail -s "Liquibase Changes in $1 for Release $VERSION" $EMAIL < $SQL_DIR/$REPORT
