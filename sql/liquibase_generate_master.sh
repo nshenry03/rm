@@ -29,8 +29,7 @@ case "${APP}" in
     GIT_DIR="${BASE_GIT_DIR}/AppDirect"
     XML_DIR="${BASE_GIT_DIR}/AppDirect/appdirect-parent/appdirect-model/src/main/resources/db"
     TARGET_DIR="${BASE_LIQUIBASE_DIR}/appdirect/db"
-###    DIST_HOSTS=(prod-att-ae1-dist01 prod-aws00-dist01 prod-comcast00-dist01 prod-de00-dist01 prod-elisa-hel-dist01 prod-ibm-dal-dist01 prod-kor00-distribution01 prod-swiss00-dist01 prod-tel-ap2-dist01 stage0-aws-ae1-dist02)
-    DIST_HOSTS=(stage0-aws-ae1-dist02)
+    DIST_HOSTS=(prod-att-ae1-dist01 prod-aws00-dist01 prod-comcast00-dist01 prod-de00-dist01 prod-elisa-hel-dist01 prod-ibm-dal-dist01 prod-kor00-distribution01 prod-swiss00-dist01 prod-tel-ap2-dist01 stage0-aws-ae1-dist02)
     ;;
   bulk)  echo  "Copying XML for Bulk DB for Release ${VERSION}"
     GIT_DIR="${BASE_GIT_DIR}/ad-att-standalone"
@@ -42,8 +41,7 @@ case "${APP}" in
     GIT_DIR="${BASE_GIT_DIR}/jbilling"
     XML_DIR="${BASE_GIT_DIR}/jbilling/web-app/database"
     TARGET_DIR="${BASE_LIQUIBASE_DIR}/jbilling"
-###    DIST_HOSTS=(prod-aws00-dist01 prod-comcast00-dist01 prod-de00-dist01 prod-elisa-hel-dist01 prod-ibm-dal-dist01 prod-kor00-distribution01 prod-swiss00-dist01 prod-tel-ap2-dist01 stage0-aws-ae1-dist02)
-    DIST_HOSTS=(stage0-aws-ae1-dist02)
+    DIST_HOSTS=(prod-aws00-dist01 prod-comcast00-dist01 prod-de00-dist01 prod-elisa-hel-dist01 prod-ibm-dal-dist01 prod-kor00-distribution01 prod-swiss00-dist01 prod-tel-ap2-dist01 stage0-aws-ae1-dist02)
     ;;
 esac
 
@@ -143,14 +141,12 @@ func_rsync() {
 func_generate() {
   echo "--- GENERATION ---"
   LIQUIBASE_DIR=/home/aduser/liquibase/bin
-###  LIQUIBASE_SCRIPT=liquibase_generate_dist.sh
-  LIQUIBASE_SCRIPT=liquibase_release-stage0-aws-ae1-dist02.sh
-  LIQUIBASE_SCRIPT=liquibase_release.sh
+  LIQUIBASE_SCRIPT=liquibase_generate_dist.sh
   cd ${SCRIPT_DIR}
   for i in "${DIST_HOSTS[@]}"; do
     echo ">>> $i"
-###    scp ${LIQUIBASE_SCRIPT} $i:${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT}
-    ssh ${i} bash -e -x ${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT} ${APP} ${VERSION} | tee -a ${TMPFILE} 2>&1
+    scp ${LIQUIBASE_SCRIPT} $i:${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT}
+    ssh ${i} bash -e ${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT} ${APP} ${VERSION} | tee -a ${TMPFILE} 2>&1
   done
 
 ###  EMAIL=operations@appdirect.com
