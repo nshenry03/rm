@@ -215,12 +215,6 @@ def sendDeployNotification(String action, ArrayList channels, ArrayList handles,
                   "short": true
               }
     """
-    if (handles) {
-        desc += "\n :speaking_head_in_silhouette: "
-        handles.each { handle ->
-            desc += "${escapeJson(handle)} "
-        }
-    }
     if (!desc.allWhitespace) {
         attachment += """,
               {
@@ -237,6 +231,14 @@ def sendDeployNotification(String action, ArrayList channels, ArrayList handles,
                     "value": "```${escapeJson(logs)}```",
                     "short": false
                }
+        """
+    }
+    if (handles) {
+        attachment += """,
+              {
+                  "value": "${escapeJson(handles.join(' '))}",
+                  "short": false
+              }
         """
     }
     def footer = "${emoji.allWhitespace ?: ":$emoji: "}${jobName} #${buildNumber}"
