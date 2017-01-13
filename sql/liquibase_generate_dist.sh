@@ -36,6 +36,7 @@ case "${APP}" in
     ;;
 esac
 CMD="cd ${APP_DIR}; /usr/bin/liquibase --logLevel=severe --defaultsFile=${CONF_DIR}/${APP}.conf --changeLogFile=${LOG_FILE} updateSQL | tee ${SQL_DIR}/${REPORT} 2>&1"
+java -jar liquibase-core.jar --defaultsFile=/home/aduser/liquibase/conf/appdirect.conf --classpath=mysql-connector-java.jar --changeLogFile=db/db.changelog-master.xml updateSQL
 
 # execute
 echo "[`hostname`] - Getting SQL for ${APP} DB for Release ${VERSION}"

@@ -26,19 +26,16 @@ BASE_GIT_DIR="/home/aduser/liquibase/source"
 BASE_LIQUIBASE_DIR="/home/aduser/liquibase/xml"
 case "${APP}" in
   appdirect)  echo "Copying XML for AppDirect DB for Release ${VERSION}"
-    GIT_DIR="${BASE_GIT_DIR}/AppDirect"
     XML_DIR="${BASE_GIT_DIR}/AppDirect/appdirect-parent/appdirect-model/src/main/resources/db"
     TARGET_DIR="${BASE_LIQUIBASE_DIR}/appdirect/db"
     DIST_HOSTS=(prod-att-ae1-dist01 prod-aws00-dist01 prod-comcast00-dist01 prod-de00-dist01 prod-elisa-hel-dist01 prod-ibm-dal-dist01 prod-kor00-distribution01 prod-swiss00-dist01 prod-tel-ap2-dist01 stage0-aws-ae1-dist02)
     ;;
   bulk)  echo  "Copying XML for Bulk DB for Release ${VERSION}"
-    GIT_DIR="${BASE_GIT_DIR}/ad-att-standalone"
     XML_DIR="${BASE_GIT_DIR}/ad-att-standalone/ad-att-standalone-lib/src/main/resources/liquibase"
     TARGET_DIR="${BASE_LIQUIBASE_DIR}/bulk/liquibase"
     DIST_HOSTS=(prod-att-ae1-dist01)
     ;;
   jbilling)  echo  "Copying XML for JBilling DB for Release ${VERSION}"
-    GIT_DIR="${BASE_GIT_DIR}/jbilling"
     XML_DIR="${BASE_GIT_DIR}/jbilling/web-app/database"
     TARGET_DIR="${BASE_LIQUIBASE_DIR}/jbilling"
     DIST_HOSTS=(prod-aws00-dist01 prod-comcast00-dist01 prod-de00-dist01 prod-elisa-hel-dist01 prod-ibm-dal-dist01 prod-kor00-distribution01 prod-swiss00-dist01 prod-tel-ap2-dist01 stage0-aws-ae1-dist02)
@@ -75,33 +72,11 @@ func_log() {
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # func_git_pull(): Get git version
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-func_git_pull() {
-  echo "--- GIT PULL ---"
-  func_log "Checking out ${VERSION} source from GIT..."
-  cd ${GIT_DIR} >> ${LOGFILE} 2>&1
+func_curl_artifact() {
+  echo "--- CURL ARTIFACT ---"
+  func_log "cURLing artifact for ${APP} version ${VERSION} from Artifactory..."
 
-  git reset --hard >> ${LOGFILE} 2>&1
-  if [ ${?} -ne 0 ]; then
-    func_log "git reset --hard failed!" "Y"
-  else
-    func_log "git reset --hard successful"
-  fi
-
-  git clean -df >> ${LOGFILE} 2>&1
-  if [ ${?} -ne 0 ]; then
-    func_log "git clean -df failed!" "Y"
-  else
-    func_log "git clean -df successful"
-  fi
-
-  git fetch origin --tags --prune >> ${LOGFILE} 2>&1
-  if [ ${?} -ne 0 ]; then
-    func_log "git fetch origin failed!" "Y"
-  else
-    func_log "git fetch origin successful"
-  fi
-
-  git checkout refs/tags/"${VERSION}" >> ${LOGFILE} 2>&1
+  curl -O http://artifactory.appdirectondemand.com/artifactory/
   if [ ${?} -ne 0 ]; then
     func_log "git checkout refs/tags/${VERSION} failed!" "Y"
   else
@@ -120,7 +95,6 @@ func_git_pull() {
 func_rsync() {
   echo "--- RSYNC ---"
   for i in "${DIST_HOSTS[@]}"; do
-    echo ">>> $i"
     rsync -aq --delete ${XML_DIR}/ $i:${TARGET_DIR}
   done
   if [ ${?} -ne 0 ]; then
@@ -144,7 +118,6 @@ func_generate() {
   LIQUIBASE_SCRIPT=liquibase_generate_dist.sh
   cd ${SCRIPT_DIR}
   for i in "${DIST_HOSTS[@]}"; do
-    echo ">>> $i"
     scp ${LIQUIBASE_SCRIPT} $i:${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT}
     ssh ${i} bash -e ${LIQUIBASE_DIR}/${LIQUIBASE_SCRIPT} ${APP} ${VERSION} | tee -a ${TMPFILE} 2>&1
   done
