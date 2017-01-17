@@ -56,7 +56,7 @@ def sendNotification(String action) {
                 if (customers.size() > 0) {
                     if (customer.allWhitespace) {
                         // sent only when upgrading multiple marketplaces
-                        sendDeployNotification(action, channels, ["@here"] + handles, MUTE, adVersion, bulkVersion, jbVersion,
+                        sendDeployNotification(action, channels, ["!here"] + handles, MUTE, adVersion, bulkVersion, jbVersion,
                                 reason, issue, customers, steps, "", "rocket",
                                 "Deployment of ${formatList(versions, false)} " +
                                         "to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} launched.",
@@ -75,7 +75,7 @@ def sendNotification(String action) {
                 // notifies that a deployment has just been completed successfully
                 if (customers.size() > 0 && customer.allWhitespace) {
                     // sent only when upgrading multiple marketplaces
-                    sendDeployNotification(action, channels, ["@here"] + handles, INFO, adVersion, bulkVersion, jbVersion,
+                    sendDeployNotification(action, channels, ["!here"] + handles, INFO, adVersion, bulkVersion, jbVersion,
                             reason, issue, customers, steps, "", "checkered_flag",
                             "Deployment of ${formatList(versions, false)} " +
                                     "to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} completed.",
@@ -94,7 +94,7 @@ def sendNotification(String action) {
                 // notifies that a deployment has just failed
                 if (customers.size() > 0 && customer.allWhitespace) {
                     // sent only when upgrading multiple marketplaces
-                    sendDeployNotification(action, channels, ["@here"] + handles, FAIL, adVersion, bulkVersion, jbVersion,
+                    sendDeployNotification(action, channels, ["!here"] + handles, FAIL, adVersion, bulkVersion, jbVersion,
                             reason, issue, customers, steps, logs, "bomb",
                             "Deployment of ${formatList(versions, false)} " +
                                     "to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} failed.",
@@ -113,7 +113,7 @@ def sendNotification(String action) {
                 // notifies that a deployment has just ended... but in a weird fashion
                 if (customers.size() > 0 && customer.allWhitespace) {
                     // sent only when upgrading multiple marketplaces
-                    sendDeployNotification(action, channels, ["@here"] + handles, WARN, adVersion, bulkVersion, jbVersion,
+                    sendDeployNotification(action, channels, ["!here"] + handles, WARN, adVersion, bulkVersion, jbVersion,
                             reason, issue, customers, steps, logs, "warning",
                             "Deployment of ${formatList(versions, false)} " +
                                     "to ${customers.size} marketplace${customers.size > 1 ? "s" : ""} ended.",
@@ -236,7 +236,7 @@ def sendDeployNotification(String action, ArrayList channels, ArrayList handles,
     if (handles) {
         attachment += """,
               {
-                  "value": "${escapeJson(handles.join(' '))}",
+                  "value": "${escapeJson(handles.collect{"<${it}>"}.join(' '))}",
                   "short": false
               }
         """
