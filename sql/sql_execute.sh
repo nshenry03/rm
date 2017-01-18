@@ -52,10 +52,6 @@ case "${APP}" in
         DISTHOST=prod-de00-dist01
         DBNAME=appdirect
         ;;
-      prod-ie00)
-        DISTHOST=prod-ie00-dist01
-        DBNAME=appdirect
-        ;;
       prod-ire00)
         DISTHOST=prod-ire00-dist01
         DBNAME=appdirect
