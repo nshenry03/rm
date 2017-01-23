@@ -372,7 +372,7 @@ def deploy_jbilling_branch_to_prod(project, branch, environment)
           nodes: %w(prod-de00-bill-batch01 prod-de00-bill-app01 prod-de00-bill-app02)
       },
       "prod-aws-ie": {
-          dist_host: DistHost.new('10.0.112.50'),
+          dist_host: DistHost.new('52.211.18.48'),
           nodes: %w(prod-ie00-bill-batch01 prod-ie00-bill-app01 prod-ie00-bill-app02)
       },
       "prod-aws-kor": {
