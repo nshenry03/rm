@@ -28,7 +28,7 @@ case "${APP}" in
   appdirect)  echo "Copying XML for AppDirect DB for Release ${VERSION}"
     XML_DIR="${BASE_GIT_DIR}/AppDirect/appdirect-parent/appdirect-model/src/main/resources/db"
     TARGET_DIR="${BASE_LIQUIBASE_DIR}/appdirect/db"
-    DIST_HOSTS=(prod-att-ae1-dist01 prod-aws00-dist01 prod-comcast00-dist01 prod-de00-dist01 prod-elisa-hel-dist01 prod-ibm-dal-dist01 prod-kor00-distribution01 prod-swiss00-dist01 prod-tel-ap2-dist01 stage0-aws-ae1-dist02)
+    DIST_HOSTS=(prod-att-ae1-dist01 prod-aws00-dist01 prod-comcast00-dist01 prod-de00-dist01 prod-elisa-hel-dist01 prod-ibm-dal-dist01 prod-kor00-distribution01 prod-swiss00-dist01 prod-swiss01-dist01 prod-tel-ap2-dist01 stage0-aws-ae1-dist02)
     ;;
   bulk)  echo  "Copying XML for Bulk DB for Release ${VERSION}"
     XML_DIR="${BASE_GIT_DIR}/ad-att-standalone/ad-att-standalone-lib/src/main/resources/liquibase"
@@ -38,7 +38,7 @@ case "${APP}" in
   jbilling)  echo  "Copying XML for JBilling DB for Release ${VERSION}"
     XML_DIR="${BASE_GIT_DIR}/jbilling/web-app/database"
     TARGET_DIR="${BASE_LIQUIBASE_DIR}/jbilling"
-    DIST_HOSTS=(prod-aws00-dist01 prod-comcast00-dist01 prod-de00-dist01 prod-elisa-hel-dist01 prod-ibm-dal-dist01 prod-kor00-distribution01 prod-swiss00-dist01 prod-tel-ap2-dist01 stage0-aws-ae1-dist02)
+    DIST_HOSTS=(prod-aws00-dist01 prod-comcast00-dist01 prod-de00-dist01 prod-elisa-hel-dist01 prod-ibm-dal-dist01 prod-kor00-distribution01 prod-swiss00-dist01 prod-swiss01-dist01 prod-tel-ap2-dist01 stage0-aws-ae1-dist02)
     ;;
 esac
 

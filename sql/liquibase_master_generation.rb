@@ -392,6 +392,9 @@ def generate_prod_sql(project, branch)
     "prod-swisscom": {
       dist_host: DistHost.new('193.246.34.223')
     },
+    "prod-swisscom-01": {
+      dist_host: DistHost.new('193.246.39.138')
+    },
     "prod-telstra": {
       dist_host: DistHost.new('54.206.33.245')
     }
@@ -400,14 +403,14 @@ def generate_prod_sql(project, branch)
   projects_map = {
     "appdirect": {
       environments: ["prod-staging", "prod-att", "prod-aws-de", "prod-aws-kor", "prod-aws-us",
-                     "prod-comcast", "prod-elisa", "prod-ibm", "prod-swisscom", "prod-telstra"]
+                     "prod-comcast", "prod-elisa", "prod-ibm", "prod-swisscom", "prod-swisscom-01", "prod-telstra"]
     },
     "bulk": {
       environments: ["prod-att"]
     },
     "jbilling": {
       environments: ["prod-staging", "prod-aws-de", "prod-aws-kor", "prod-aws-us", "prod-comcast",
-                     "prod-elisa", "prod-ibm", "prod-swisscom", "prod-telstra"]
+                     "prod-elisa", "prod-ibm", "prod-swisscom", "prod-swisscom-01", "prod-telstra"]
     }
   }
 

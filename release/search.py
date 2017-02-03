@@ -21,6 +21,7 @@ prod_maven_profile_matrix = {
     "prod-ire": "prod-ire00-www",
     "prod-samsung": "prod-sam00-www",
     "prod-swisscom": "prod-swiss00-www",
+    "prod-swisscom-01": "prod-swiss01-www",
     "prod-telstra": "prod-tel-www"
 }
 
@@ -38,6 +39,7 @@ prod_tomcat_host_matrix = {
     "prod-ire": "prod-ire00-www-origin01 prod-ire00-www-origin02 prod-ire00-www-app01 prod-ire00-www-app02",
     "prod-samsung": "prod-sam00-www-origin01 prod-sam00-www-origin02 prod-sam00-www-app01 prod-sam00-www-app02",
     "prod-swisscom": "prod-swiss00-www-origin01 prod-swiss00-www-origin02 prod-swiss00-www-app01 prod-swiss00-www-app02",
+    "prod-swisscom-01": "prod-swiss01-www-origin01 prod-swiss01-www-origin02 prod-swiss01-www-app01 prod-swiss01-www-app02",
     "prod-telstra": "prod-tel-ap2-www-origin01 prod-tel-ap2-www-origin02 prod-tel-ap2-www-app01 prod-tel-ap2-www-app02 prod-tel-ap2-www-app03 prod-tel-ap2-www-app04 prod-tel-ap2-www-app05"
 }
 
@@ -55,12 +57,12 @@ prod_dist_host_matrix = {
     "prod-ire": "prod-ire00-dist01",
     "prod-samsung": "prod-sam00-dist01",
     "prod-swisscom": "prod-swiss00-dist01",
+    "prod-swisscom-01": "prod-swiss01-dist01",
     "prod-telstra": "prod-tel-ap2-dist01"
 }
 
 prod_health_check_type_matrix = {
     "prod-elisa": "https"
-    # "prod-swisscom": "https"
 }
 
 

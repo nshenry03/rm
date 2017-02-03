@@ -64,6 +64,10 @@ case "${APP}" in
         DISTHOST=prod-swiss00-dist01
         DBNAME=appdirect
         ;;
+      prod-swiss01)
+        DISTHOST=prod-swiss01-dist01
+        DBNAME=appdirect
+        ;;
       prod-telstra)
         DISTHOST=prod-tel-ap2-dist01
         DBNAME=appdirect
@@ -111,6 +115,10 @@ case "${APP}" in
         ;;
       prod-swiss00)
         DISTHOST=prod-swiss00-dist01
+        DBNAME=jbilling
+        ;;
+      prod-swiss01)
+        DISTHOST=prod-swiss01-dist01
         DBNAME=jbilling
         ;;
       prod-telstra)
