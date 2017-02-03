@@ -400,6 +400,10 @@ def deploy_jbilling_branch_to_prod(project, branch, environment)
           dist_host: DistHost.new('193.246.34.223'),
           nodes: %w(prod-swiss00-bill-batch01 prod-swiss00-bill-app01 prod-swiss00-bill-app02)
       },
+      "prod-swisscom-01": {
+          dist_host: DistHost.new('193.246.39.138'),
+          nodes: %w(prod-swiss01-bill-batch01 prod-swiss01-bill-app01 prod-swiss01-bill-app02)
+      },
       "prod-telstra": {
           dist_host: DistHost.new('54.206.33.245'),
           nodes: %w(prod-tel-ap2-bill-batch01 prod-tel-ap2-bill-app01 prod-tel-ap2-bill-app02)
